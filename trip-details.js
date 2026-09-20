@@ -19,6 +19,9 @@ function normalizeImageSource(value, fallback = "white_island.jpeg") {
             return cleaned;
         }
 
+        const localPathParts = cleaned.match(/^[A-Za-z]:\/(?:.*\/)?([^/]+)$/);
+        if (localPathParts) return localPathParts[1];
+
         const withoutLeadingSlash = cleaned.replace(/^\/+/, "").replace(/^\.\//, "");
 
         if (!withoutLeadingSlash) return fallback;
