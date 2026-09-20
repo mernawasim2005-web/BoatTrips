@@ -1099,6 +1099,42 @@ background-color: rgb(1, 35, 63);
     border-radius: 7px;
 }
 
+.trip-time-slots {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid #d5e5e9;
+    text-align: left;
+}
+
+.trip-time-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.trip-time-option {
+    min-width: 132px;
+    padding: 10px 14px;
+    border: 1px solid #087ea4;
+    border-radius: 8px;
+    background: white;
+    color: #0d3d56;
+    cursor: pointer;
+    font: inherit;
+}
+
+.trip-time-option:hover,
+.trip-time-option.selected {
+    background: #087ea4;
+    color: white;
+}
+
+.selected-time-note {
+    color: #0d3d56;
+    font-weight: 600;
+}
+
 @media (max-width: 500px) {
     .calendar-weekdays {
         font-size: 10px;
@@ -1111,6 +1147,17 @@ background-color: rgb(1, 35, 63);
 
     .trip-date-slot.has-schedule span {
         font-size: 9px;
+    }
+
+    .trip-time-options {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .trip-time-option {
+        min-width: 0;
+        padding: 10px 6px;
+        font-size: 13px;
     }
 }
 

@@ -385,11 +385,15 @@ if (!tripId) {
                             <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
                         </div>
                         <div id="trip-date-slots" class="trip-date-slots"></div>
+                        <div id="trip-time-slots" class="trip-time-slots" aria-live="polite">
+                            <p class="calendar-note">Choose a date to view available times.</p>
+                        </div>
                         <select id="schedule-select" hidden></select>
                     </div>
                 `;
 
                 const dateSlots = document.getElementById("trip-date-slots");
+                const timeSlots = document.getElementById("trip-time-slots");
                 const scheduleSelect = document.getElementById("schedule-select");
                 const bookedSlotKeys = await getBookedSlotKeys(selectedBoatId);
                 const availableDates = [...new Set(matchingSlots.map((slot) => slot.date))].sort();
@@ -425,14 +429,39 @@ if (!tripId) {
                             captainName: "Not assigned"
                         };
                         scheduleSelect.innerHTML = `<option value="selected" selected></option>`;
+                        timeSlots.innerHTML = `<p class="calendar-note selected-time-note">Date selected. The trip time will be confirmed with you.</p>`;
                         return;
                     }
 
                     const daySlots = slotsForDate(selectedDate);
-                    selectedScheduleSlot = daySlots.find((slot) => !bookedSlotKeys.has(getSlotKey(slot, selectedBoatId))) || null;
-                    scheduleSelect.innerHTML = selectedScheduleSlot
-                        ? `<option value="selected" selected></option>`
-                        : "";
+                    const availableSlots = daySlots.filter((slot) => !bookedSlotKeys.has(getSlotKey(slot, selectedBoatId)));
+                    selectedScheduleSlot = null;
+                    scheduleSelect.innerHTML = "";
+
+                    if (availableSlots.length === 0) {
+                        timeSlots.innerHTML = `<p class="calendar-note">No available times for this date.</p>`;
+                        return;
+                    }
+
+                    timeSlots.innerHTML = `
+                        <strong>Available times</strong>
+                        <div class="trip-time-options">
+                            ${availableSlots.map((slot, index) => `
+                                <button type="button" class="trip-time-option" data-slot-index="${index}">
+                                    ${slot.startTime || "Time to be confirmed"}${slot.endTime ? ` - ${slot.endTime}` : ""}
+                                </button>
+                            `).join("")}
+                        </div>
+                    `;
+
+                    timeSlots.querySelectorAll(".trip-time-option").forEach((button, index) => {
+                        button.addEventListener("click", () => {
+                            selectedScheduleSlot = availableSlots[index];
+                            timeSlots.querySelectorAll(".trip-time-option").forEach((item) => item.classList.remove("selected"));
+                            button.classList.add("selected");
+                            scheduleSelect.innerHTML = `<option value="selected" selected></option>`;
+                        });
+                    });
                 }
 
                 function renderMonth() {
@@ -455,6 +484,8 @@ if (!tripId) {
                     dateSlots.querySelectorAll(".trip-date-slot:not(:disabled)").forEach((button) => {
                         button.addEventListener("click", () => {
                             selectedScheduleSlot = null;
+                            timeSlots.innerHTML = `<p class="calendar-note">Choose an available time below.</p>`;
+                            scheduleSelect.innerHTML = "";
                             dateSlots.querySelectorAll(".trip-date-slot").forEach((item) => item.classList.remove("selected"));
                             button.classList.add("selected");
                             renderTimes(button.dataset.date);
