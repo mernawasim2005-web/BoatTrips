@@ -37,9 +37,11 @@ function normalizeImageSource(value, fallback = "white_island.jpeg") {
 }
 
 function getTripMainImage(trip) {
-    const candidates = [];
+    if (trip?.background) {
+        return normalizeImageSource(trip.background, "white_island.jpeg");
+    }
 
-    if (trip?.background) candidates.push(trip.background);
+    const candidates = [];
 
     if (Array.isArray(trip?.gallery)) {
         trip.gallery.forEach((item) => {
