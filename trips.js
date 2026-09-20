@@ -16,17 +16,16 @@ function normalizeImageSource(value, fallback = "white_island.jpeg") {
             return cleaned;
         }
 
-        const withoutLeadingSlash = cleaned.replace(/^\//, "");
+        const localPathParts = cleaned.match(/^[A-Za-z]:\/(?:.*\/)?([^/]+)$/);
+        if (localPathParts) return localPathParts[1];
+
+        const withoutLeadingSlash = cleaned.replace(/^\/+/, "").replace(/^\.\//, "");
 
         if (withoutLeadingSlash.startsWith("images/")) {
             return withoutLeadingSlash;
         }
 
-        if (withoutLeadingSlash.startsWith("./images/")) {
-            return withoutLeadingSlash.replace(/^\.\//, "");
-        }
-
-        return `images/${withoutLeadingSlash.replace(/^\.\//, "")}`;
+        return withoutLeadingSlash;
     }
 
     if (typeof value === "object") {
