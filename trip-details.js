@@ -97,8 +97,15 @@ if (!tripId) {
             const getSlotKey = (slot, boatId) => `${tripId}|${boatId}|${slot.date}|${slot.startTime}|${slot.endTime}`;
 
             async function getBookedSlotKeys(boatId) {
-                const snapshot = await getDocs(collection(db, "bookings"));
                 const bookedKeys = new Set();
+
+                let snapshot;
+                try {
+                    snapshot = await getDocs(collection(db, "bookings"));
+                } catch (error) {
+                    console.warn("Bookings are not readable for public visitors; showing scheduled times.", error);
+                    return bookedKeys;
+                }
 
                 snapshot.forEach((bookingDoc) => {
                     const booking = bookingDoc.data();
@@ -395,7 +402,9 @@ if (!tripId) {
                 const dateSlots = document.getElementById("trip-date-slots");
                 const timeSlots = document.getElementById("trip-time-slots");
                 const scheduleSelect = document.getElementById("schedule-select");
-                const bookedSlotKeys = await getBookedSlotKeys(selectedBoatId);
+                const bookedSlotKeys = dateOnlyBooking
+                    ? new Set()
+                    : await getBookedSlotKeys(selectedBoatId);
                 const availableDates = [...new Set(matchingSlots.map((slot) => slot.date))].sort();
                 let displayedMonth = availableDates.length > 0
                     ? new Date(`${availableDates[0]}T00:00:00`)
