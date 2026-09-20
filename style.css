@@ -1283,6 +1283,31 @@ background-color: rgb(1, 35, 63);
     font-size: 10px;
 }
 
+.admin-calendar-slot {
+    display: block;
+    overflow: hidden;
+    margin-top: 4px;
+    padding: 4px 5px;
+    border-radius: 4px;
+    background: #fff4d6;
+    color: #664d03;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-calendar-slot strong,
+.admin-calendar-slot small {
+    display: block;
+}
+
+.admin-calendar-slot small {
+    overflow: hidden;
+    color: #806b2a;
+    font-size: 10px;
+    text-overflow: ellipsis;
+}
+
 #admin-calendar-events {
     gap: 6px;
 }

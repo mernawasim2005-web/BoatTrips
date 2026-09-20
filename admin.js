@@ -24,6 +24,7 @@ let currentTripGallery = [];
 let adminCalendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
 let adminCalendarBoatId = "";
 let adminCalendarBookings = [];
+let adminCalendarSlots = [];
 
 
 
@@ -401,9 +402,10 @@ async function loadBookingCalendar() {
     if (!calendarContainer || !boatSelect) return;
 
     try {
-        const [boatsSnapshot, bookingsSnapshot] = await Promise.all([
+        const [boatsSnapshot, bookingsSnapshot, tripsSnapshot] = await Promise.all([
             getDocs(collection(db, "boats")),
-            getDocs(collection(db, "bookings"))
+            getDocs(collection(db, "bookings")),
+            getDocs(collection(db, "trips"))
         ]);
         const boats = [];
         boatsSnapshot.forEach((boatDoc) => {
@@ -415,6 +417,19 @@ async function loadBookingCalendar() {
         bookingsSnapshot.forEach((bookingDoc) => {
             const booking = bookingDoc.data();
             if (!isCancelledBooking(booking)) adminCalendarBookings.push(booking);
+        });
+
+        adminCalendarSlots = [];
+        tripsSnapshot.forEach((tripDoc) => {
+            const trip = tripDoc.data();
+            (trip.schedule || []).forEach((slot) => {
+                adminCalendarSlots.push({
+                    ...slot,
+                    tripId: tripDoc.id,
+                    tripName: trip.name || "Trip",
+                    capacity: trip.capacity || 0
+                });
+            });
         });
 
         if (boats.length === 0) {
@@ -456,6 +471,32 @@ function renderAdminBoatCalendar() {
         if (date) (grouped[date] ||= []).push(booking);
         return grouped;
     }, {});
+    const selectedBoatSlots = adminCalendarSlots.filter((slot) =>
+        String(slot.boatId || slot.boatID || slot.id || "") === String(adminCalendarBoatId)
+        || normalizeBoatName(slot.boatName || slot.boat) === normalizeBoatName(selectedBoatName)
+    );
+    const slotsByDate = selectedBoatSlots.reduce((grouped, slot) => {
+        if (slot.date) (grouped[slot.date] ||= []).push(slot);
+        return grouped;
+    }, {});
+
+    function normalizeBoatName(name) {
+        return String(name || "").trim().toLowerCase();
+    }
+
+    function slotBookingCount(slot, date) {
+        return selectedBoatBookings
+            .filter((booking) => {
+                const bookingDate = booking.tripDate || (booking.scheduleText || "").slice(0, 10);
+                if (bookingDate !== date) return false;
+                if (booking.slotKey && slot.tripId) {
+                    return booking.slotKey === `${slot.tripId}|${adminCalendarBoatId}|${slot.date}|${slot.startTime}|${slot.endTime}`;
+                }
+                return (!slot.startTime || booking.startTime === slot.startTime)
+                    && (!slot.endTime || booking.endTime === slot.endTime);
+            })
+            .reduce((total, booking) => total + (Number(booking.peopleCount) || 0), 0);
+    }
 
     monthLabel.textContent = adminCalendarMonth.toLocaleDateString("en-US", { month: "long", year: "numeric" });
     const emptyDays = Array.from({ length: firstDay }, () => `<span class="admin-calendar-day empty" aria-hidden="true"></span>`).join("");
@@ -463,13 +504,22 @@ function renderAdminBoatCalendar() {
         const day = index + 1;
         const date = `${selectedYear}-${String(selectedMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
         const bookings = bookingsByDate[date] || [];
+        const slots = slotsByDate[date] || [];
         const bookingSummary = bookings.map((booking) => `
             <span class="admin-calendar-booking">${booking.customerName || "Customer"} <small>${booking.peopleCount || 0} guests</small></span>
         `).join("");
+        const slotSummary = slots.map((slot) => {
+            const bookedPeople = slotBookingCount(slot, date);
+            const capacity = Number(slot.capacity) || 0;
+            const availability = capacity > 0 ? `${bookedPeople}/${capacity} booked` : `${bookedPeople} booked`;
+            return `<span class="admin-calendar-slot"><strong>${slot.startTime || "Time TBC"}${slot.endTime ? ` - ${slot.endTime}` : ""}</strong><small>${slot.tripName} | ${availability}</small></span>`;
+        }).join("");
 
         return `
-            <div class="admin-calendar-day ${bookings.length > 0 ? "has-bookings" : ""}">
+            <div class="admin-calendar-day ${bookings.length > 0 || slots.length > 0 ? "has-bookings" : ""}">
                 <strong>${day}</strong>
+                ${slots.length > 0 ? `<span class="admin-calendar-booking-count">${slots.length} scheduled slot${slots.length === 1 ? "" : "s"}</span>` : ""}
+                ${slotSummary}
                 ${bookings.length > 0 ? `<span class="admin-calendar-booking-count">${bookings.length} booking${bookings.length === 1 ? "" : "s"}</span>` : ""}
                 ${bookingSummary}
             </div>
