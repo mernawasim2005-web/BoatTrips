@@ -66,24 +66,23 @@ try {
 
     if (snapshot.empty) {
         tripContainer.innerHTML = "<p>No trips available right now.</p>";
-        return;
+    } else {
+        tripContainer.innerHTML = snapshot.docs.map((doc) => {
+            const trip = doc.data();
+            const tripImage = getTripMainImage(trip);
+
+            return `
+                <div class="trip-card">
+                    <img src="${tripImage}" alt="${trip.name}" class="trip-image"
+                         onerror="this.onerror=null;this.src='white_island.jpeg';">
+                    <h2>${trip.name}</h2>
+                    <a href="trips-details.html?id=${doc.id}" class="view-btn">
+                        View Details
+                    </a>
+                </div>
+            `;
+        }).join("");
     }
-
-    tripContainer.innerHTML = snapshot.docs.map((doc) => {
-        const trip = doc.data();
-        const tripImage = getTripMainImage(trip);
-
-        return `
-            <div class="trip-card">
-                <img src="${tripImage}" alt="${trip.name}" class="trip-image"
-                     onerror="this.onerror=null;this.src='white_island.jpeg';">
-                <h2>${trip.name}</h2>
-                <a href="trips-details.html?id=${doc.id}" class="view-btn">
-                    View Details
-                </a>
-            </div>
-        `;
-    }).join("");
 } catch (error) {
     console.error("Error loading trips:", error);
     tripContainer.innerHTML = "<p>Failed to load trips. Please try again later.</p>";
