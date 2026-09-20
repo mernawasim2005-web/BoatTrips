@@ -145,7 +145,8 @@ if (!tripId) {
                 : [];
 
             if (trip.background) {
-                tripDetailsSection.style.backgroundImage = `url('${trip.background}')`;
+                const backgroundImage = normalizeImageSource(trip.background, "images/white_island.jpeg");
+                tripDetailsSection.style.backgroundImage = `url('${backgroundImage}')`;
                 tripDetailsSection.style.backgroundSize = "cover";
                 tripDetailsSection.style.backgroundPosition = "center";
                 tripDetailsSection.style.backgroundAttachment = "fixed";
