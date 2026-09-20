@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Owner Login</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">🚤 Boat Trips</div>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="trips.html">Trips</a>
+            <a href="about.html">About Us</a>
+            <a href="#">Contact</a>
+        </div>
+    </nav>
+
+
+    <!-- Login Form -->
+    <section class="login-section">
+
+        <div class="login-box">
+
+            <h1>Owner Login</h1>
+
+            <p class="section-description">
+                Sign in to manage your trips and bookings
+            </p>
+
+            <form id="login-form">
+                <label>
+                    Email:
+                    <input type="email" id="login-email" required>
+                </label>
+
+                <label>
+                    Password:
+                    <input type="password" id="login-password" required>
+                </label>
+
+                <p id="login-error" class="error-message"></p>
+
+                
+                <button type="submit" class="book-btn">Login</button>
+                
+
+            </form>
+
+        </div>
+
+    </section>
+
+    <script type="module" src="owner-login.js"></script>
+
+</body>
+
+</html>
