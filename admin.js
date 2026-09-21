@@ -638,7 +638,7 @@ html += `
         <p>👨‍✈️ ${booking.captainName || "Not assigned"}</p>
         <p>📅 ${booking.scheduleText}</p>
         <p>👥 ${booking.peopleCount} people</p>
-        ${booking.addons && booking.addons.length > 0 ? `<p>➕ ${booking.addons.join(", ")}</p>` : ""}
+        ${booking.addons && booking.addons.length > 0 ? `<p>➕ ${booking.addons.map((addon) => typeof addon === "string" ? addon : `${addon.name}${addon.peopleCount ? ` (${addon.peopleCount} people)` : ""}`).join(", ")}</p>` : ""}
         <p>💰 Revenue: ${booking.totalPrice} EGP</p>
         <p class="booking-date">Booked on: ${date}</p>
 

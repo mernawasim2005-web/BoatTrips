@@ -167,6 +167,7 @@ if (!tripId) {
                     <span class="addon-details">
                         <span class="addon-name">${addon.name}</span>
                         <span class="addon-price">+${addon.price} EGP ${addon.type === "per_person" ? "/ person" : "/ boat"}</span>
+                        ${addon.type === "per_person" ? `<label class="addon-people-label">People adding this: <input type="number" class="addon-people-count" min="1" value="1" disabled></label>` : ""}
                     </span>
                 </label>
             `).join("");
@@ -524,6 +525,10 @@ if (!tripId) {
                 if (!selectedBoat) return;
 
                 const peopleCount = parseInt(document.getElementById("people-count").value) || 1;
+                document.querySelectorAll(".addon-people-count").forEach((input) => {
+                    input.max = peopleCount;
+                    if (parseInt(input.value) > peopleCount) input.value = peopleCount;
+                });
                 let total = selectedBoat.price * peopleCount;
 
                 document.querySelectorAll(".addon-checkbox:checked").forEach((checkbox) => {
@@ -531,7 +536,8 @@ if (!tripId) {
                     const type = checkbox.dataset.type;
 
                     if (type === "per_person") {
-                        total += price * peopleCount;
+                        const addonPeople = parseInt(checkbox.closest(".addon-item").querySelector(".addon-people-count")?.value) || 1;
+                        total += price * addonPeople;
                     } else if (type === "per_boat") {
                         total += price;
                     }
@@ -541,10 +547,14 @@ if (!tripId) {
             }
 
             document.getElementById("booking-form").addEventListener("input", (e) => {
-                if (e.target.id === "people-count") updateTotal();
+                if (e.target.id === "people-count" || e.target.classList.contains("addon-people-count")) updateTotal();
             });
             document.getElementById("booking-form").addEventListener("change", (e) => {
-                if (e.target.classList.contains("addon-checkbox")) updateTotal();
+                if (e.target.classList.contains("addon-checkbox")) {
+                    const addonPeopleInput = e.target.closest(".addon-item").querySelector(".addon-people-count");
+                    if (addonPeopleInput) addonPeopleInput.disabled = !e.target.checked;
+                    updateTotal();
+                }
             });
 
             // Handle Book Now button click
@@ -568,15 +578,25 @@ if (!tripId) {
                 document.querySelectorAll(".addon-checkbox:checked").forEach((checkbox) => {
                     const price = parseFloat(checkbox.dataset.price);
                     const type = checkbox.dataset.type;
-                    const addonName = checkbox.parentElement.textContent.trim().split(" (+")[0];
+                    const addonItem = checkbox.closest(".addon-item");
+                    const addonName = addonItem.querySelector(".addon-name").textContent.trim();
+                    const addonPeople = type === "per_person"
+                        ? Math.min(peopleCount, Math.max(1, parseInt(addonItem.querySelector(".addon-people-count")?.value) || 1))
+                        : null;
 
                     if (type === "per_person") {
-                        total += price * peopleCount;
+                        total += price * addonPeople;
                     } else if (type === "per_boat") {
                         total += price;
                     }
 
-                    selectedAddons.push(addonName);
+                    selectedAddons.push({
+                        name: addonName,
+                        price,
+                        type,
+                        peopleCount: addonPeople,
+                        total: type === "per_person" ? price * addonPeople : price
+                    });
                 });
 
                 let scheduleText = "Not specified";
@@ -636,7 +656,7 @@ if (!tripId) {
                 message += `Number of people: ${peopleCount}\n`;
 
                 if (selectedAddons.length > 0) {
-                    message += `Add-ons: ${selectedAddons.join(", ")}\n`;
+                    message += `Add-ons: ${selectedAddons.map((addon) => `${addon.name}${addon.peopleCount ? ` (${addon.peopleCount} people)` : ""}`).join(", ")}\n`;
                 }
 
                 message += `Total Price: ${total} EGP\n\n`;

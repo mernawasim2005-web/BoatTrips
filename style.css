@@ -375,6 +375,21 @@ nav {
     gap: 3px;
 }
 
+.addon-people-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #087ea4;
+}
+
+.addon-people-count {
+    width: 64px;
+    padding: 5px 7px;
+    border: 1px solid #b9dce7;
+    border-radius: 6px;
+}
+
 .addon-price {
     font-size: 0.9rem;
     opacity: 0.8;
