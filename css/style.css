@@ -63,7 +63,7 @@ nav {
 .logo {
     font-size: 24px;
     font-weight: bold;
-    color: rgb(245, 212, 151);
+    color: #087ea4;
 }
 
 .nav-links {
@@ -771,7 +771,7 @@ background-color: rgb(1, 35, 63);
 }
 
 .admin-sidebar .logo {
-    color: white;
+    color: #087ea4;
     padding: 0 20px 20px;
     font-size: 18px;
     border-bottom: 1px solid rgba(255,255,255,0.1);
@@ -1910,6 +1910,8 @@ body.fleet-page .about-intro p {
         height: 260px;
     }
 }
+
+
 
 
 
