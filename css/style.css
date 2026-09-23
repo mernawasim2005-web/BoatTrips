@@ -65,20 +65,17 @@ nav {
     font-weight: bold;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 0;
     color: #087ea4;
-}
-
-.logo-image {
-    width: 62px;
-    height: 62px;
-    object-fit: contain;
+    flex-shrink: 0;
 }
 
 .logo-word {
-    width: 165px;
-    height: 50px;
+    width: 250px;
+    height: auto;
+    max-width: 100%;
     object-fit: contain;
+    display: block;
 }
 
 .nav-links {
@@ -806,14 +803,10 @@ background-color: rgb(1, 35, 63);
     margin-bottom: 10px;
 }
 
-.admin-sidebar .logo-image {
-    width: 58px;
-    height: 58px;
-}
-
 .admin-sidebar .logo-word {
-    width: 125px;
-    height: 42px;
+    width: 180px;
+    height: auto;
+    filter: brightness(0) saturate(100%) invert(84%) sepia(22%) saturate(450%) hue-rotate(355deg) brightness(105%) contrast(92%);
 }
 
 .admin-sidebar-buttons {
@@ -868,7 +861,7 @@ background-color: rgb(1, 35, 63);
 .admin-main {
     flex-grow: 1;
     padding: 30px;
-    background-color: #f5fbff;
+    background-color: #f3e5c8;
     overflow-y: auto;
 }
 
@@ -1950,14 +1943,9 @@ body.fleet-page .about-intro p {
 }
 
 @media (max-width: 900px) {
-    .logo-image {
-        width: 48px;
-        height: 48px;
-    }
-
     .logo-word {
-        width: 125px;
-        height: 38px;
+        width: min(220px, 42vw);
+        height: auto;
     }
 }
 

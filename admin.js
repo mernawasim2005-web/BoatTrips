@@ -37,6 +37,17 @@ function isCancelledBooking(booking) {
     return status === "cancelled" || status === "canceled";
 }
 
+function isConfirmedBooking(booking) {
+    return String(booking.status || "").trim().toLowerCase() === "confirmed";
+}
+
+function getBookingDate(value) {
+    if (!value) return null;
+    if (typeof value.toDate === "function") return value.toDate();
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? null : date;
+}
+
 function extractMonthFromScheduleText(scheduleText) {
     if (!scheduleText) return null;
     const match = scheduleText.match(/^(\d{4})-(\d{2})-\d{2}/);
@@ -202,8 +213,86 @@ async function checkScheduleConflicts(excludeTripId = null) {
 
 async function renderOverview() {
     adminContent.innerHTML = `
-        <h2>Overview</h2>
+        <div class="dashboard-titlebar">
+            <div>
+                <span>OWNER ANALYTICS</span>
+                <h2>Sales Performance Dashboard</h2>
+            </div>
+            <small>Live booking data</small>
+        </div>
         <div id="overview-grid" class="overview-grid">Loading...</div>
+        <div class="dashboard-summary-layout">
+            <section class="dashboard-chart booking-mix-card">
+                <div class="dashboard-chart-heading">
+                    <h3>Booking mix</h3>
+                    <span>Active bookings</span>
+                </div>
+                <div class="booking-mix-content">
+                    <div id="booking-mix-donut" class="booking-mix-donut" aria-label="Booking status distribution"></div>
+                    <div id="booking-mix-legend" class="booking-mix-legend">Loading...</div>
+                </div>
+            </section>
+            <section class="dashboard-chart recent-activity-card">
+                <div class="dashboard-chart-heading">
+                    <h3>Recent activity</h3>
+                    <span>Latest bookings</span>
+                </div>
+                <div id="recent-activity-list" class="recent-activity-list">Loading...</div>
+            </section>
+        </div>
+        <section class="dashboard-chart trend-chart-card">
+            <div class="dashboard-chart-heading">
+                <h3>Bookings over time</h3>
+                <span>Monthly active bookings</span>
+            </div>
+            <div id="booking-trend-chart" class="trend-chart">Loading...</div>
+        </section>
+        <div class="overview-charts" aria-label="Dashboard analysis charts">
+            <section class="dashboard-chart">
+                <div class="dashboard-chart-heading">
+                    <h3>Revenue trend</h3>
+                    <span>Last 6 months</span>
+                </div>
+                <div id="revenue-chart" class="bar-chart">Loading...</div>
+            </section>
+            <section class="dashboard-chart">
+                <div class="dashboard-chart-heading">
+                    <h3>Booking status</h3>
+                    <span>Active bookings</span>
+                </div>
+                <div id="status-chart" class="status-chart">Loading...</div>
+            </section>
+            <section class="dashboard-chart">
+                <div class="dashboard-chart-heading">
+                    <h3>Booking volume</h3>
+                    <span>Bookings by month</span>
+                </div>
+                <div id="booking-volume-chart" class="bar-chart">Loading...</div>
+            </section>
+            <section class="dashboard-chart">
+                <div class="dashboard-chart-heading">
+                    <h3>Capacity utilization</h3>
+                    <span>Upcoming trips</span>
+                </div>
+                <div id="occupancy-chart" class="status-chart">Loading...</div>
+            </section>
+        </div>
+        <div class="dashboard-leaderboards">
+            <section class="dashboard-chart">
+                <div class="dashboard-chart-heading">
+                    <h3>Top trips</h3>
+                    <span>Guests by trip</span>
+                </div>
+                <div id="trip-chart" class="status-chart">Loading...</div>
+            </section>
+            <section class="dashboard-chart">
+                <div class="dashboard-chart-heading">
+                    <h3>Top boats</h3>
+                    <span>Guests by boat</span>
+                </div>
+                <div id="boat-chart" class="status-chart">Loading...</div>
+            </section>
+        </div>
     `;
 
         const upcoming = await getUpcomingSchedule(5);
@@ -235,19 +324,66 @@ async function renderOverview() {
         let allTimeRevenue = 0;
         let activeBookingsCount = 0;
         let todayBookingsCount = 0;
+        const now = new Date();
+        const monthlyRevenue = Array.from({ length: 6 }, (_, index) => {
+            const date = new Date(now.getFullYear(), now.getMonth() - 5 + index, 1);
+            return {
+                key: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`,
+                label: date.toLocaleDateString("en-US", { month: "short" }),
+                value: 0
+            };
+        });
+        const monthlyBookings = monthlyRevenue.map((month) => ({ ...month, value: 0 }));
+        const bookingStatuses = { pending: 0, confirmed: 0 };
+        const guestsByTrip = {};
+        const guestsByBoat = {};
+        const recentBookings = [];
         const startOfToday = new Date();
         startOfToday.setHours(0, 0, 0, 0);
 
         bookingsSnap.forEach((docSnap) => {
-    const booking = docSnap.data();
-    if (booking.status === "cancelled") return;
+            const booking = docSnap.data();
+            if (isCancelledBooking(booking)) return;
 
-    activeBookingsCount++;
-    allTimeRevenue += booking.totalPrice || 0;
-    if (new Date(booking.createdAt) >= startOfToday) {
-        todayBookingsCount++;
-    }
-});
+            activeBookingsCount++;
+            const revenue = Number(booking.totalPrice) || 0;
+            const guestCount = Number(booking.peopleCount) || 0;
+            if (getBookingDate(booking.createdAt) >= startOfToday) todayBookingsCount++;
+
+            const status = String(booking.status || "pending").trim().toLowerCase();
+            bookingStatuses[status] = (bookingStatuses[status] || 0) + 1;
+            recentBookings.push({
+                customerName: booking.customerName || "Customer",
+                status,
+                createdAt: getBookingDate(booking.createdAt),
+                totalPrice: revenue
+            });
+
+            const bookingDate = getBookingDate(booking.createdAt);
+            if (bookingDate) {
+                const monthKey = `${bookingDate.getFullYear()}-${String(bookingDate.getMonth() + 1).padStart(2, "0")}`;
+                const bookingMonth = monthlyBookings.find((item) => item.key === monthKey);
+                if (bookingMonth) bookingMonth.value++;
+            }
+            if (isConfirmedBooking(booking)) {
+                allTimeRevenue += revenue;
+            }
+            if (bookingDate && isConfirmedBooking(booking)) {
+                const monthKey = `${bookingDate.getFullYear()}-${String(bookingDate.getMonth() + 1).padStart(2, "0")}`;
+                const month = monthlyRevenue.find((item) => item.key === monthKey);
+                if (month) month.value += revenue;
+            }
+
+            if (booking.tripId) {
+                guestsByTrip[booking.tripId] = (guestsByTrip[booking.tripId] || 0) + guestCount;
+            }
+            if (booking.boatName) {
+                guestsByBoat[booking.boatName] = (guestsByBoat[booking.boatName] || 0) + guestCount;
+            }
+            if (booking.boatName) {
+                guestsByBoat[booking.boatName] = (guestsByBoat[booking.boatName] || 0) + guestCount;
+            }
+        });
 
         let activeBoatsCount = 0;
         boatsSnap.forEach((docSnap) => {
@@ -276,6 +412,94 @@ async function renderOverview() {
                 <span class="overview-label">All-Time Revenue</span>
             </div>
         `;
+
+        const confirmedPercent = activeBookingsCount ? (bookingStatuses.confirmed || 0) / activeBookingsCount * 100 : 0;
+        const pendingPercent = activeBookingsCount ? (bookingStatuses.pending || 0) / activeBookingsCount * 100 : 0;
+        document.getElementById("booking-mix-donut").style.background = `conic-gradient(#35a66f 0 ${confirmedPercent}%, #f1b24a ${confirmedPercent}% ${confirmedPercent + pendingPercent}%, #dce7eb ${confirmedPercent + pendingPercent}% 100%)`;
+        document.getElementById("booking-mix-legend").innerHTML = `
+            <div class="booking-mix-legend-row"><span><i class="legend-dot confirmed-dot"></i>Confirmed</span><strong>${bookingStatuses.confirmed || 0}</strong></div>
+            <div class="booking-mix-legend-row"><span><i class="legend-dot pending-dot"></i>Pending</span><strong>${bookingStatuses.pending || 0}</strong></div>
+        `;
+
+        const recentActivity = recentBookings
+            .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+            .slice(0, 5);
+        document.getElementById("recent-activity-list").innerHTML = recentActivity.length ? recentActivity.map((booking) => `
+            <div class="recent-activity-row">
+                <span class="recent-activity-icon ${booking.status}">${booking.status === "confirmed" ? "✓" : "•"}</span>
+                <div><strong>${booking.customerName}</strong><small>${booking.status} booking${booking.createdAt ? ` · ${booking.createdAt.toLocaleDateString()}` : ""}</small></div>
+                <b>${booking.totalPrice.toLocaleString()} EGP</b>
+            </div>
+        `).join("") : "<p>No booking activity yet.</p>";
+
+        const maxTrendBookings = Math.max(...monthlyBookings.map((month) => month.value), 1);
+        const trendPoints = monthlyBookings.map((month, index) => {
+            const x = 22 + index * (256 / Math.max(monthlyBookings.length - 1, 1));
+            const y = 142 - (month.value / maxTrendBookings) * 108;
+            return { x, y, month };
+        });
+        document.getElementById("booking-trend-chart").innerHTML = `
+            <svg viewBox="0 0 300 190" role="img" aria-label="Monthly booking trend">
+                <line x1="22" y1="34" x2="278" y2="34" class="trend-grid-line"></line>
+                <line x1="22" y1="88" x2="278" y2="88" class="trend-grid-line"></line>
+                <line x1="22" y1="142" x2="278" y2="142" class="trend-grid-line"></line>
+                <polyline points="${trendPoints.map((point) => `${point.x},${point.y}`).join(" ")}" class="trend-line"></polyline>
+                ${trendPoints.map((point) => `<circle cx="${point.x}" cy="${point.y}" r="4" class="trend-point"></circle><text x="${point.x}" y="166" class="trend-label">${point.month.label}</text><text x="${point.x}" y="${point.y - 9}" class="trend-value">${point.month.value}</text>`).join("")}
+            </svg>
+        `;
+
+        const maxMonthlyRevenue = Math.max(...monthlyRevenue.map((month) => month.value), 1);
+        document.getElementById("revenue-chart").innerHTML = monthlyRevenue.map((month) => `
+            <div class="bar-chart-column">
+                <span class="bar-chart-value">${month.value.toLocaleString()} EGP</span>
+                <div class="bar-chart-track"><span class="bar-chart-bar" style="height:${Math.max((month.value / maxMonthlyRevenue) * 100, month.value ? 8 : 2)}%"></span></div>
+                <span class="bar-chart-label">${month.label}</span>
+            </div>
+        `).join("");
+
+        const statusLabels = { pending: "Pending", confirmed: "Confirmed" };
+        document.getElementById("status-chart").innerHTML = Object.entries(statusLabels).map(([status, label]) => {
+            const count = bookingStatuses[status] || 0;
+            const width = activeBookingsCount ? (count / activeBookingsCount) * 100 : 0;
+            return `<div class="status-chart-row"><div class="status-chart-meta"><span>${label}</span><strong>${count}</strong></div><div class="status-chart-track"><span class="status-chart-bar status-${status}" style="width:${width}%"></span></div></div>`;
+        }).join("");
+
+        const maxMonthlyBookings = Math.max(...monthlyBookings.map((month) => month.value), 1);
+        document.getElementById("booking-volume-chart").innerHTML = monthlyBookings.map((month) => `
+            <div class="bar-chart-column">
+                <span class="bar-chart-value">${month.value}</span>
+                <div class="bar-chart-track"><span class="bar-chart-bar booking-volume-bar" style="height:${Math.max((month.value / maxMonthlyBookings) * 100, month.value ? 8 : 2)}%"></span></div>
+                <span class="bar-chart-label">${month.label}</span>
+            </div>
+        `).join("");
+
+        const occupancyTrips = upcoming.filter((trip) => Number(trip.capacity) > 0);
+        document.getElementById("occupancy-chart").innerHTML = occupancyTrips.length ? occupancyTrips.map((trip) => {
+            const capacity = Number(trip.capacity);
+            const booked = Number(trip.booked) || 0;
+            const width = Math.min((booked / capacity) * 100, 100);
+            return `<div class="status-chart-row"><div class="status-chart-meta"><span>${trip.tripName}</span><strong>${booked}/${capacity}</strong></div><div class="status-chart-track"><span class="status-chart-bar occupancy-bar" style="width:${width}%"></span></div></div>`;
+        }).join("") : "<p>No upcoming capacity data yet.</p>";
+
+        const tripNames = {};
+        tripsSnap.forEach((docSnap) => { tripNames[docSnap.id] = docSnap.data().name || "Unnamed trip"; });
+        const tripDemand = Object.entries(guestsByTrip)
+            .map(([tripId, guests]) => ({ name: tripNames[tripId] || "Deleted trip", guests }))
+            .sort((a, b) => b.guests - a.guests)
+            .slice(0, 5);
+        const maxTripGuests = Math.max(...tripDemand.map((trip) => trip.guests), 1);
+        document.getElementById("trip-chart").innerHTML = tripDemand.length ? tripDemand.map((trip) => `
+            <div class="status-chart-row"><div class="status-chart-meta"><span>${trip.name}</span><strong>${trip.guests} guests</strong></div><div class="status-chart-track"><span class="status-chart-bar trip-demand-bar" style="width:${(trip.guests / maxTripGuests) * 100}%"></span></div></div>
+        `).join("") : "<p>No booking demand data yet.</p>";
+
+        const boatDemand = Object.entries(guestsByBoat)
+            .map(([name, guests]) => ({ name, guests }))
+            .sort((a, b) => b.guests - a.guests)
+            .slice(0, 5);
+        const maxBoatGuests = Math.max(...boatDemand.map((boat) => boat.guests), 1);
+        document.getElementById("boat-chart").innerHTML = boatDemand.length ? boatDemand.map((boat) => `
+            <div class="status-chart-row"><div class="status-chart-meta"><span>${boat.name}</span><strong>${boat.guests} guests</strong></div><div class="status-chart-track"><span class="status-chart-bar boat-demand-bar" style="width:${(boat.guests / maxBoatGuests) * 100}%"></span></div></div>
+        `).join("") : "<p>No boat demand data yet.</p>";
 
     } catch (error) {
         console.error("Error loading overview:", error);
@@ -532,6 +756,14 @@ function renderAdminBoatCalendar() {
 function renderTripsSection() {
     adminContent.innerHTML = `
         <h2>Manage Trips</h2>
+        <div id="admin-trip-details"></div>
+        <section class="dashboard-chart admin-performance-section">
+            <div class="dashboard-chart-heading">
+                <h3>Trip performance</h3>
+                <span>Confirmed revenue and active bookings</span>
+            </div>
+            <div id="trip-performance-chart" class="performance-chart">Loading...</div>
+        </section>
         <button id="add-trip-btn" class="book-btn">+ Add New Trip</button>
         <div id="trip-form-container"></div>
         <div id="admin-trips-list">Loading trips...</div>
@@ -544,11 +776,20 @@ function renderTripsSection() {
     });
 
     loadTripsList();
+    loadTripPerformanceChart();
 }
 
 function renderBoatsSection() {
     adminContent.innerHTML = `
         <h2>Manage Boats</h2>
+        <div id="admin-boat-details"></div>
+        <section class="dashboard-chart admin-performance-section">
+            <div class="dashboard-chart-heading">
+                <h3>Boat performance</h3>
+                <span>Confirmed revenue and active bookings</span>
+            </div>
+            <div id="boat-performance-chart" class="performance-chart">Loading...</div>
+        </section>
         <button id="add-boat-btn" class="book-btn">+ Add New Boat</button>
         <div id="boat-form-container"></div>
         <div id="admin-boats-list">Loading boats...</div>
@@ -560,11 +801,19 @@ function renderBoatsSection() {
     });
 
     loadBoatsList();
+    loadBoatPerformanceChart();
 }
 
 function renderRevenueSection() {
     adminContent.innerHTML = `
         <h2>Revenue</h2>
+        <section class="dashboard-chart revenue-over-time-panel">
+            <div class="dashboard-chart-heading">
+                <h3>Revenue over time</h3>
+                <span>Confirmed revenue by month</span>
+            </div>
+            <div id="revenue-over-time-chart" class="revenue-over-time-chart">Loading...</div>
+        </section>
         <div id="admin-revenue" class="revenue-container">Loading revenue...</div>
     `;
     loadRevenue();
@@ -590,7 +839,7 @@ async function loadBookingsList() {
             bookings.push({ id: docSnap.id, ...docSnap.data() });
         });
         // Cancelled bookings no longer occupy a boat time and are hidden from the active list.
-        bookings = bookings.filter((booking) => booking.status !== "cancelled");
+        bookings = bookings.filter((booking) => !isCancelledBooking(booking));
         bookings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
         // Apply search filter (by customer name)
@@ -819,6 +1068,7 @@ async function loadTripsList() {
                 <div class="admin-trip-row">
                     <span><strong>${trip.name}</strong></span>
                     <div>
+                        <button class="details-trip-btn" data-id="${docSnap.id}">Details</button>
                         <button class="edit-trip-btn" data-id="${docSnap.id}">Edit</button>
                         <button class="delete-trip-btn" data-id="${docSnap.id}">Delete</button>
                     </div>
@@ -827,6 +1077,10 @@ async function loadTripsList() {
         });
 
         listContainer.innerHTML = html;
+
+        document.querySelectorAll(".details-trip-btn").forEach((btn) => {
+            btn.addEventListener("click", () => showTripDetails(btn.dataset.id));
+        });
 
         document.querySelectorAll(".edit-trip-btn").forEach((btn) => {
             btn.addEventListener("click", () => editTrip(btn.dataset.id));
@@ -839,6 +1093,68 @@ async function loadTripsList() {
     } catch (error) {
         console.error("Error loading trips:", error);
         listContainer.innerHTML = "<p>Failed to load trips.</p>";
+    }
+}
+
+async function showTripDetails(tripId) {
+    const detailsContainer = document.getElementById("admin-trip-details");
+    if (!detailsContainer) return;
+
+    detailsContainer.innerHTML = `<section class="dashboard-chart admin-trip-details-panel">Loading trip details...</section>`;
+
+    try {
+        const tripsSnapshot = await getDocs(collection(db, "trips"));
+        const tripDocument = tripsSnapshot.docs.find((tripDoc) => tripDoc.id === tripId);
+        if (!tripDocument) {
+            detailsContainer.innerHTML = "<p>Trip details are no longer available.</p>";
+            return;
+        }
+
+        const trip = tripDocument.data();
+        const bookings = (await getActiveBookings()).filter((booking) => booking.tripId === tripId);
+        const schedule = Array.isArray(trip.schedule) ? trip.schedule : [];
+        const bookedGuests = bookings.reduce((total, booking) => total + (Number(booking.peopleCount) || 0), 0);
+        const scheduleDemand = schedule.map((slot) => ({
+            slot,
+            booked: bookings
+                .filter((booking) => booking.scheduleText === formatScheduleText(slot) || booking.tripDate === slot.date)
+                .reduce((total, booking) => total + (Number(booking.peopleCount) || 0), 0)
+        }));
+        const maxScheduledGuests = Math.max(...scheduleDemand.map((item) => item.booked), 1);
+        const scheduleBars = scheduleDemand.length ? scheduleDemand.map(({ slot, booked }) => {
+            const width = (booked / maxScheduledGuests) * 100;
+            return `
+                <div class="status-chart-row">
+                    <div class="status-chart-meta"><span>${slot.date} · ${slot.boatName || "Boat not assigned"}</span><strong>${booked} guests</strong></div>
+                    <div class="status-chart-track"><span class="status-chart-bar trip-detail-bar" style="width:${width}%"></span></div>
+                </div>
+            `;
+        }).join("") : "<p>No schedule has been added to this trip.</p>";
+
+        detailsContainer.innerHTML = `
+            <section class="dashboard-chart admin-trip-details-panel">
+                <div class="dashboard-chart-heading">
+                    <h3>${trip.name || "Trip details"}</h3>
+                    <button type="button" class="close-trip-details" aria-label="Close trip details">Close</button>
+                </div>
+                <div class="trip-details-summary">
+                    <div><span>Location</span><strong>${trip.location || "Not set"}</strong></div>
+                    <div><span>Duration</span><strong>${trip.duration || "Not set"}</strong></div>
+                    <div><span>Guests booked</span><strong>${bookedGuests}</strong></div>
+                </div>
+                <p class="trip-details-description">${trip.description || "No description has been added."}</p>
+                <h4 class="trip-details-subheading">Scheduled departures</h4>
+                <div class="status-chart">${scheduleBars}</div>
+            </section>
+        `;
+
+        detailsContainer.querySelector(".close-trip-details").addEventListener("click", () => {
+            detailsContainer.innerHTML = "";
+        });
+        detailsContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (error) {
+        console.error("Error loading trip details:", error);
+        detailsContainer.innerHTML = "<p>Failed to load trip details.</p>";
     }
 }
 
@@ -1289,6 +1605,79 @@ async function deleteTrip(tripId) {
     }
 }
 
+function renderPerformanceChart(container, stats, resultLimit = 7, entityLabel = "Item") {
+    if (!container) return;
+
+    const rows = Object.values(stats);
+    if (rows.length === 0) {
+        container.innerHTML = "<p>No active booking data yet.</p>";
+        return;
+    }
+
+    const renderVerticalChart = (metric, title, barClass, formatValue) => {
+        const metricRows = [...rows]
+            .sort((a, b) => b[metric] - a[metric] || b.bookings - a.bookings)
+            .slice(0, resultLimit);
+        const maxValue = Math.max(...metricRows.map((row) => row[metric]), 1);
+        return `
+            <div class="vertical-performance-card">
+                <h4>${title}</h4>
+                <div class="vertical-performance-chart">
+                    ${metricRows.map((row) => `
+                        <div class="vertical-performance-column" title="${row.name}: ${formatValue(row[metric])}">
+                            <strong>${formatValue(row[metric])}</strong>
+                            <div class="vertical-performance-track"><span class="vertical-performance-bar ${barClass}" style="height:${Math.max((row[metric] / maxValue) * 100, row[metric] ? 8 : 2)}%"></span></div>
+                            <span>${row.name}</span>
+                        </div>
+                    `).join("")}
+                </div>
+            </div>
+        `;
+    };
+
+    container.innerHTML = `
+        <div class="performance-chart-caption">Top ${entityLabel.toLowerCase()}s by confirmed revenue and booking volume</div>
+        <div class="vertical-performance-grid">
+            ${renderVerticalChart("revenue", "Revenue by " + entityLabel, "revenue-performance-bar", (value) => `${value.toLocaleString()} EGP`)}
+            ${renderVerticalChart("bookings", "Bookings by " + entityLabel, "booking-performance-bar", (value) => `${value}`)}
+        </div>
+    `;
+}
+
+async function loadTripPerformanceChart() {
+    const container = document.getElementById("trip-performance-chart");
+    if (!container) return;
+
+    try {
+        const [tripsSnapshot, bookingsSnapshot] = await Promise.all([
+            getDocs(collection(db, "trips")),
+            getDocs(collection(db, "bookings"))
+        ]);
+        const tripIdsByName = {};
+        const stats = {};
+        tripsSnapshot.forEach((tripDoc) => {
+            const tripName = tripDoc.data().name || "Unnamed trip";
+            tripIdsByName[String(tripName).trim().toLowerCase()] = tripDoc.id;
+            stats[tripDoc.id] = { name: tripName, revenue: 0, bookings: 0 };
+        });
+        bookingsSnapshot.forEach((bookingDoc) => {
+            const booking = bookingDoc.data();
+            if (isCancelledBooking(booking)) return;
+            const bookingTripName = String(booking.tripName || "").trim().toLowerCase();
+            const key = stats[booking.tripId]
+                ? booking.tripId
+                : tripIdsByName[bookingTripName];
+            if (!key) return;
+            stats[key].bookings++;
+            if (isConfirmedBooking(booking)) stats[key].revenue += Number(booking.totalPrice) || 0;
+        });
+        renderPerformanceChart(container, stats, Object.keys(stats).length, "Trip");
+    } catch (error) {
+        console.error("Error loading trip performance:", error);
+        container.innerHTML = "<p>Failed to load trip performance.</p>";
+    }
+}
+
 /* ---------------- BOATS ---------------- */
 
 async function loadBoatsList() {
@@ -1325,6 +1714,7 @@ async function loadBoatsList() {
                     <div class="admin-trip-row">
                         <span><strong>${boat.name}</strong> — ${boat.capacity} people — ${statusLabel}</span>
                         <div>
+                            <button class="details-boat-btn" data-id="${docSnap.id}">Details</button>
                             <button class="edit-boat-btn" data-id="${docSnap.id}">Edit</button>
                             <button class="delete-boat-btn" data-id="${docSnap.id}">Delete</button>
                         </div>
@@ -1334,6 +1724,10 @@ async function loadBoatsList() {
         });
 
         listContainer.innerHTML = html;
+        document.querySelectorAll(".details-boat-btn").forEach((btn) => {
+            btn.addEventListener("click", () => showBoatDetails(btn.dataset.id));
+        });
+
         document.querySelectorAll(".edit-boat-btn").forEach((btn) => {
             btn.addEventListener("click", () => editBoat(btn.dataset.id));
         });
@@ -1345,6 +1739,134 @@ async function loadBoatsList() {
     } catch (error) {
         console.error("Error loading boats:", error);
         listContainer.innerHTML = "<p>Failed to load boats.</p>";
+    }
+}
+
+async function showBoatDetails(boatId) {
+    const detailsContainer = document.getElementById("admin-boat-details");
+    if (!detailsContainer) return;
+
+    detailsContainer.innerHTML = `<section class="dashboard-chart admin-trip-details-panel">Loading boat details...</section>`;
+
+    try {
+        const boatsSnapshot = await getDocs(collection(db, "boats"));
+        const boatDocument = boatsSnapshot.docs.find((boatDoc) => boatDoc.id === boatId);
+        if (!boatDocument) {
+            detailsContainer.innerHTML = "<p>Boat details are no longer available.</p>";
+            return;
+        }
+
+        const boat = boatDocument.data();
+        const images = boat.images && boat.images.length > 0 ? boat.images : (boat.image ? [boat.image] : []);
+        const bookings = (await getActiveBookings()).filter((booking) =>
+            String(booking.boatId || "") === String(boatId)
+            || (!booking.boatId && booking.boatName === boat.name)
+        );
+        const guestsByTrip = {};
+        bookings.forEach((booking) => {
+            const tripName = booking.tripName || "Unassigned trip";
+            guestsByTrip[tripName] = (guestsByTrip[tripName] || 0) + (Number(booking.peopleCount) || 0);
+        });
+        const tripDemand = Object.entries(guestsByTrip).sort((a, b) => b[1] - a[1]).slice(0, 5);
+        const maxTripGuests = Math.max(...tripDemand.map((trip) => trip[1]), 1);
+        const statusLabel = {
+            active: "Active",
+            maintenance: "Maintenance",
+            out_of_service: "Out of Service"
+        }[boat.status] || boat.status || "Not set";
+        const galleryHTML = images.length ? images.map((image, index) => `
+            <button type="button" class="boat-detail-photo-button" data-src="${image}" data-alt="${boat.name} photo ${index + 1}">
+                <img src="${image}" alt="${boat.name} photo ${index + 1}" class="boat-detail-photo">
+            </button>
+        `).join("") : "<p>No photos have been added to this boat.</p>";
+        const demandHTML = tripDemand.length ? tripDemand.map(([tripName, guests]) => `
+            <div class="status-chart-row">
+                <div class="status-chart-meta"><span>${tripName}</span><strong>${guests} guests</strong></div>
+                <div class="status-chart-track"><span class="status-chart-bar boat-detail-bar" style="width:${(guests / maxTripGuests) * 100}%"></span></div>
+            </div>
+        `).join("") : "<p>No booking demand data for this boat yet.</p>";
+
+        detailsContainer.innerHTML = `
+            <section class="dashboard-chart admin-trip-details-panel admin-boat-details-panel">
+                <div class="dashboard-chart-heading">
+                    <h3>${boat.name || "Boat details"}</h3>
+                    <button type="button" class="close-boat-details" aria-label="Close boat details">Close</button>
+                </div>
+                <div class="trip-details-summary">
+                    <div><span>Status</span><strong>${statusLabel}</strong></div>
+                    <div><span>Capacity</span><strong>${boat.capacity || "Not set"} guests</strong></div>
+                    <div><span>Guests booked</span><strong>${bookings.reduce((total, booking) => total + (Number(booking.peopleCount) || 0), 0)}</strong></div>
+                    <div><span>Engine</span><strong>${boat.engine || "Not set"}</strong></div>
+                    <div><span>Length</span><strong>${boat.length || "Not set"}</strong></div>
+                    <div><span>Year built</span><strong>${boat.year || "Not set"}</strong></div>
+                </div>
+                <h4 class="trip-details-subheading">Boat photos</h4>
+                <div class="boat-details-gallery">${galleryHTML}</div>
+                <h4 class="trip-details-subheading">Guest demand by trip</h4>
+                <div class="status-chart">${demandHTML}</div>
+            </section>
+        `;
+
+        detailsContainer.querySelector(".close-boat-details").addEventListener("click", () => {
+            detailsContainer.innerHTML = "";
+        });
+        detailsContainer.querySelectorAll(".boat-detail-photo-button").forEach((button) => {
+            button.addEventListener("click", () => openBoatPhoto(button.dataset.src, button.dataset.alt));
+        });
+        detailsContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (error) {
+        console.error("Error loading boat details:", error);
+        detailsContainer.innerHTML = "<p>Failed to load boat details.</p>";
+    }
+}
+
+function openBoatPhoto(source, altText) {
+    const viewer = document.createElement("div");
+    viewer.className = "boat-photo-viewer";
+    viewer.innerHTML = `
+        <button type="button" class="boat-photo-viewer-close" aria-label="Close enlarged photo">Close</button>
+        <img src="${source}" alt="${altText}">
+    `;
+    document.body.appendChild(viewer);
+
+    const closeViewer = () => viewer.remove();
+    viewer.querySelector(".boat-photo-viewer-close").addEventListener("click", closeViewer);
+    viewer.addEventListener("click", (event) => {
+        if (event.target === viewer) closeViewer();
+    });
+}
+
+async function loadBoatPerformanceChart() {
+    const container = document.getElementById("boat-performance-chart");
+    if (!container) return;
+
+    try {
+        const [boatsSnapshot, bookingsSnapshot] = await Promise.all([
+            getDocs(collection(db, "boats")),
+            getDocs(collection(db, "bookings"))
+        ]);
+        const boatIdsByName = {};
+        const stats = {};
+        boatsSnapshot.forEach((boatDoc) => {
+            const boat = boatDoc.data();
+            boatIdsByName[String(boat.name || "").trim().toLowerCase()] = boatDoc.id;
+            stats[boatDoc.id] = { name: boat.name || "Unnamed boat", revenue: 0, bookings: 0 };
+        });
+        bookingsSnapshot.forEach((bookingDoc) => {
+            const booking = bookingDoc.data();
+            if (isCancelledBooking(booking)) return;
+            const bookingBoatName = String(booking.boatName || "").trim().toLowerCase();
+            const key = stats[booking.boatId]
+                ? booking.boatId
+                : boatIdsByName[bookingBoatName];
+            if (!key) return;
+            stats[key].bookings++;
+            if (isConfirmedBooking(booking)) stats[key].revenue += Number(booking.totalPrice) || 0;
+        });
+        renderPerformanceChart(container, stats, Object.keys(stats).length, "Boat");
+    } catch (error) {
+        console.error("Error loading boat performance:", error);
+        container.innerHTML = "<p>Failed to load boat performance.</p>";
     }
 }
 
@@ -1532,7 +2054,7 @@ async function loadRevenue() {
 
         snapshot.forEach((docSnap) => {
     const booking = docSnap.data();
-    if (booking.status === "cancelled") return;
+    if (!isConfirmedBooking(booking)) return;
 
     const revenue = booking.totalPrice || 0;
     const cost = booking.cost || 0;
@@ -1610,6 +2132,17 @@ async function loadRevenue() {
                 `;
             }).join("");
 
+        const revenueMonths = Object.entries(revenueByMonth)
+            .sort((a, b) => a[0].localeCompare(b[0]))
+            .map(([monthKey, data]) => {
+                const [year, month] = monthKey.split("-");
+                return {
+                    label: `${monthNames[parseInt(month) - 1].slice(0, 3)} ${year.slice(-2)}`,
+                    value: data.revenue
+                };
+            });
+        renderMonthlyRevenueChart(document.getElementById("revenue-over-time-chart"), revenueMonths);
+
         const allTimeProfit = allTimeRevenue - allTimeCost;
         const todayProfit = todayRevenue - todayCost;
         const weekProfit = weekRevenue - weekCost;
@@ -1660,6 +2193,27 @@ async function loadRevenue() {
         console.error("Error loading revenue:", error);
         revenueContainer.innerHTML = "<p>Failed to load revenue.</p>";
     }
+}
+
+function renderMonthlyRevenueChart(container, months) {
+    if (!container) return;
+    if (months.length === 0) {
+        container.innerHTML = "<p>No confirmed revenue data yet.</p>";
+        return;
+    }
+
+    const maxRevenue = Math.max(...months.map((month) => month.value), 1);
+    container.innerHTML = `
+        <div class="vertical-revenue-chart">
+            ${months.map((month) => `
+                <div class="vertical-revenue-column" title="${month.label}: ${month.value.toLocaleString()} EGP">
+                    <strong>${month.value.toLocaleString()}</strong>
+                    <div class="vertical-revenue-track"><span class="vertical-revenue-bar" style="height:${Math.max((month.value / maxRevenue) * 100, month.value ? 8 : 2)}%"></span></div>
+                    <span>${month.label}</span>
+                </div>
+            `).join("")}
+        </div>
+    `;
 }
 
 
@@ -1749,7 +2303,7 @@ async function loadNetProfit() {
         let tripRevenue = 0, tripCost = 0;
         bookingsSnap.forEach((docSnap) => {
             const b = docSnap.data();
-            if (b.status === "cancelled") return;
+            if (!isConfirmedBooking(b)) return;
             if (extractMonthFromScheduleText(b.scheduleText) === selectedMonth) {
                 tripRevenue += b.totalPrice || 0;
                 tripCost += b.cost || 0;

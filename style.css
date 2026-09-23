@@ -65,20 +65,17 @@ nav {
     font-weight: bold;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 0;
     color: #087ea4;
-}
-
-.logo-image {
-    width: 62px;
-    height: 62px;
-    object-fit: contain;
+    flex-shrink: 0;
 }
 
 .logo-word {
-    width: 165px;
-    height: 50px;
+    width: 250px;
+    height: auto;
+    max-width: 100%;
     object-fit: contain;
+    display: block;
 }
 
 .nav-links {
@@ -625,6 +622,16 @@ background-color: rgb(1, 35, 63);
     cursor: pointer;
 }
 
+.details-trip-btn {
+    background-color: #d39a4a;
+    color: #17384a;
+}
+
+.details-boat-btn {
+    background-color: #d39a4a;
+    color: #17384a;
+}
+
 .edit-trip-btn {
     background-color: #087ea4;
     color: white;
@@ -633,6 +640,137 @@ background-color: rgb(1, 35, 63);
 .delete-trip-btn {
     background-color: #d9534f;
     color: white;
+}
+
+.admin-trip-details-panel {
+    margin: 20px 0;
+}
+
+.admin-trip-details-panel .dashboard-chart-heading {
+    align-items: center;
+}
+
+.close-trip-details {
+    border: 1px solid #c8d8dd;
+    border-radius: 6px;
+    padding: 6px 12px;
+    background-color: #f7fafb;
+    color: #315364;
+    cursor: pointer;
+}
+
+.trip-details-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.trip-details-summary div {
+    padding: 12px;
+    border: 1px solid #e3ecef;
+    border-radius: 8px;
+    background-color: #fbfdfe;
+}
+
+.trip-details-summary span,
+.trip-details-summary strong {
+    display: block;
+}
+
+.trip-details-summary span {
+    color: #71818a;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.trip-details-summary strong {
+    color: #17384a;
+    font-size: 14px;
+}
+
+.trip-details-description {
+    color: #45616f;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.trip-overall-demand {
+    margin-bottom: 22px;
+}
+
+.trip-details-subheading {
+    margin-bottom: 14px;
+    color: #17384a;
+}
+
+.status-chart-bar.trip-detail-bar {
+    background: linear-gradient(90deg, #d39a4a, #087ea4);
+}
+
+.status-chart-bar.boat-detail-bar {
+    background: linear-gradient(90deg, #35a7b8, #245b78);
+}
+
+.boat-details-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.boat-detail-photo-button {
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+    border-radius: 8px;
+    overflow: hidden;
+    line-height: 0;
+}
+
+.boat-detail-photo {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.boat-detail-photo-button:hover .boat-detail-photo {
+    transform: scale(1.04);
+    filter: brightness(1.05);
+}
+
+.boat-photo-viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px 24px;
+    background: rgba(9, 29, 40, 0.86);
+}
+
+.boat-photo-viewer img {
+    max-width: min(1100px, 95vw);
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.boat-photo-viewer-close {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    padding: 8px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    cursor: pointer;
 }
 
 .admin-form {
@@ -804,14 +942,10 @@ background-color: rgb(1, 35, 63);
     margin-bottom: 10px;
 }
 
-.admin-sidebar .logo-image {
-    width: 58px;
-    height: 58px;
-}
-
 .admin-sidebar .logo-word {
-    width: 125px;
-    height: 42px;
+    width: 180px;
+    height: auto;
+    filter: brightness(0) saturate(100%) invert(84%) sepia(22%) saturate(450%) hue-rotate(355deg) brightness(105%) contrast(92%);
 }
 
 .admin-sidebar-buttons {
@@ -866,7 +1000,7 @@ background-color: rgb(1, 35, 63);
 .admin-main {
     flex-grow: 1;
     padding: 30px;
-    background-color: #f5fbff;
+    background-color: #f3e5c8;
     overflow-y: auto;
 }
 
@@ -897,6 +1031,591 @@ background-color: rgb(1, 35, 63);
 .overview-card .overview-label {
     color: #666;
     font-size: 14px;
+}
+
+.overview-charts {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.dashboard-titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 24px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    background: linear-gradient(110deg, #123f5b, #087ea4);
+    color: white;
+    box-shadow: 0 5px 16px rgba(15, 55, 76, 0.18);
+}
+
+.dashboard-titlebar span {
+    display: block;
+    margin-bottom: 4px;
+    color: #d8bc7d;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1.4px;
+}
+
+.dashboard-titlebar h2 {
+    margin: 0;
+    color: white;
+    font-size: clamp(22px, 3vw, 32px);
+    text-transform: uppercase;
+}
+
+.dashboard-titlebar small {
+    color: rgba(255, 255, 255, 0.78);
+    white-space: nowrap;
+}
+
+.trend-chart-card {
+    margin-top: 20px;
+}
+
+.trend-chart {
+    width: 100%;
+    min-height: 190px;
+}
+
+.trend-chart svg {
+    width: 100%;
+    height: 190px;
+    overflow: visible;
+}
+
+.trend-grid-line {
+    stroke: #dbe7eb;
+    stroke-width: 1;
+}
+
+.trend-line {
+    fill: none;
+    stroke: #087ea4;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.trend-point {
+    fill: #d39a4a;
+    stroke: white;
+    stroke-width: 2;
+}
+
+.trend-label,
+.trend-value {
+    fill: #71818a;
+    font-size: 9px;
+    text-anchor: middle;
+}
+
+.trend-value {
+    fill: #17384a;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.dashboard-leaderboards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.dashboard-chart {
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    min-width: 0;
+}
+
+.dashboard-summary-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.15fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.booking-mix-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    min-height: 150px;
+}
+
+.booking-mix-donut {
+    width: 142px;
+    height: 142px;
+    flex: 0 0 142px;
+    border-radius: 50%;
+    position: relative;
+}
+
+.booking-mix-donut::after {
+    content: "";
+    position: absolute;
+    inset: 28px;
+    border-radius: 50%;
+    background: white;
+}
+
+.booking-mix-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 130px;
+}
+
+.booking-mix-legend-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    color: #315364;
+    font-size: 13px;
+}
+
+.booking-mix-legend-row span {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.booking-mix-legend-row strong {
+    color: #17384a;
+}
+
+.legend-dot {
+    width: 9px;
+    height: 9px;
+    display: inline-block;
+    border-radius: 50%;
+}
+
+.confirmed-dot {
+    background: #35a66f;
+}
+
+.pending-dot {
+    background: #f1b24a;
+}
+
+.recent-activity-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.recent-activity-row {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr) max-content;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #edf1f2;
+}
+
+.recent-activity-row:last-child {
+    border-bottom: none;
+}
+
+.recent-activity-row > div {
+    min-width: 0;
+}
+
+.recent-activity-row strong,
+.recent-activity-row small {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.recent-activity-row strong {
+    color: #17384a;
+    font-size: 13px;
+}
+
+.recent-activity-row small {
+    color: #71818a;
+    font-size: 11px;
+    margin-top: 3px;
+    text-transform: capitalize;
+}
+
+.recent-activity-row b {
+    color: #087ea4;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.recent-activity-icon {
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: white;
+    font-weight: bold;
+}
+
+.recent-activity-icon.confirmed {
+    background: #35a66f;
+}
+
+.recent-activity-icon.pending {
+    background: #f1b24a;
+}
+
+.admin-performance-section {
+    margin: 20px 0;
+}
+
+.revenue-over-time-panel {
+    margin: 20px 0;
+}
+
+.revenue-over-time-chart {
+    min-height: 250px;
+}
+
+.vertical-revenue-chart {
+    height: 250px;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+    gap: 10px;
+    border-bottom: 1px solid #cbdde3;
+}
+
+.vertical-revenue-column {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.vertical-revenue-column > strong {
+    color: #315364;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.vertical-revenue-track {
+    width: min(42px, 72%);
+    height: 180px;
+    display: flex;
+    align-items: flex-end;
+    background: #e9f1f3;
+    border-radius: 6px 6px 0 0;
+    overflow: hidden;
+}
+
+.vertical-revenue-bar {
+    width: 100%;
+    min-height: 2px;
+    border-radius: 6px 6px 0 0;
+    background: linear-gradient(180deg, #35a7b8, #087ea4);
+}
+
+.vertical-revenue-column > span {
+    color: #71818a;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.performance-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.performance-chart-caption {
+    color: #71818a;
+    font-size: 12px;
+}
+
+.vertical-performance-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.vertical-performance-card {
+    min-width: 0;
+    padding: 14px 12px 10px;
+    border: 1px solid #e3ecef;
+    border-radius: 8px;
+    background: #fbfdfe;
+}
+
+.vertical-performance-card h4 {
+    margin-bottom: 16px;
+    color: #17384a;
+    font-size: 14px;
+    text-align: center;
+}
+
+.vertical-performance-chart {
+    height: 220px;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+    gap: 8px;
+    border-bottom: 1px solid #cbdde3;
+}
+
+.vertical-performance-column {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+}
+
+.vertical-performance-column > strong {
+    max-width: 100%;
+    overflow: hidden;
+    color: #315364;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.vertical-performance-track {
+    width: min(34px, 75%);
+    height: 150px;
+    display: flex;
+    align-items: flex-end;
+    background: #e9f1f3;
+    border-radius: 5px 5px 0 0;
+    overflow: hidden;
+}
+
+.vertical-performance-bar {
+    width: 100%;
+    min-height: 2px;
+    border-radius: 5px 5px 0 0;
+}
+
+.vertical-performance-column > span {
+    width: 100%;
+    overflow: hidden;
+    color: #71818a;
+    font-size: 10px;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.performance-chart-item {
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e3ecef;
+}
+
+.performance-chart-item:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.performance-chart-title {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 9px;
+    color: #17384a;
+}
+
+.performance-chart-title span {
+    color: #71818a;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.performance-bar-line {
+    display: grid;
+    grid-template-columns: 68px minmax(0, 1fr) max-content;
+    align-items: center;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.performance-bar-label {
+    color: #71818a;
+    font-size: 12px;
+}
+
+.performance-bar-track {
+    height: 9px;
+    background: #edf5f7;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.performance-bar {
+    display: block;
+    height: 100%;
+    min-width: 2px;
+    border-radius: 10px;
+}
+
+.revenue-performance-bar {
+    background: linear-gradient(90deg, #d39a4a, #b8792f);
+}
+
+.booking-performance-bar {
+    background: linear-gradient(90deg, #35a7b8, #087ea4);
+}
+
+.performance-bar-value {
+    min-width: 72px;
+    color: #315364;
+    font-size: 12px;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.trip-demand-chart {
+    margin-top: 20px;
+}
+
+.dashboard-chart-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.dashboard-chart-heading h3 {
+    font-size: 18px;
+}
+
+.dashboard-chart-heading span {
+    color: #71818a;
+    font-size: 12px;
+}
+
+.bar-chart {
+    height: 220px;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+    gap: 10px;
+    border-bottom: 1px solid #dbe7eb;
+}
+
+.bar-chart-column {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.bar-chart-value {
+    color: #087ea4;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.bar-chart-track {
+    width: min(44px, 70%);
+    height: 155px;
+    display: flex;
+    align-items: flex-end;
+    background: #edf5f7;
+    border-radius: 6px 6px 0 0;
+    overflow: hidden;
+}
+
+.bar-chart-bar {
+    width: 100%;
+    background: linear-gradient(180deg, #35a7b8, #087ea4);
+    border-radius: 6px 6px 0 0;
+}
+
+.bar-chart-bar.booking-volume-bar {
+    background: linear-gradient(180deg, #e6bd72, #b9873c);
+}
+
+.bar-chart-label {
+    color: #71818a;
+    font-size: 12px;
+}
+
+.status-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.status-chart-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.status-chart-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 14px;
+}
+
+.status-chart-meta span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.status-chart-meta strong {
+    color: #087ea4;
+    white-space: nowrap;
+}
+
+.status-chart-track {
+    height: 10px;
+    background: #edf5f7;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.status-chart-bar {
+    display: block;
+    height: 100%;
+    min-width: 2px;
+    border-radius: 10px;
+    background: #f1b24a;
+}
+
+.status-chart-bar.status-confirmed {
+    background: #35a66f;
+}
+
+.status-chart-bar.trip-demand-bar {
+    background: #087ea4;
+}
+
+.status-chart-bar.boat-demand-bar {
+    background: linear-gradient(90deg, #35a7b8, #245b78);
+}
+
+.status-chart-bar.occupancy-bar {
+    background: linear-gradient(90deg, #d39a4a, #087ea4);
 }
 
 .booking-row-header {
@@ -2168,6 +2887,52 @@ body.fleet-page .about-intro p {
         padding: 20px 14px;
     }
 
+    .overview-charts {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-summary-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-leaderboards {
+        grid-template-columns: 1fr;
+    }
+
+    .vertical-performance-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-titlebar {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 16px 18px;
+    }
+
+    .dashboard-chart {
+        padding: 16px;
+    }
+
+    .trip-details-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-trip-row {
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .admin-trip-row > div {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 6px;
+    }
+
+    .admin-trip-row button {
+        margin-left: 0;
+    }
+
     .trip-gallery-row {
         grid-template-columns: 1fr;
         gap: 14px;
@@ -2234,14 +2999,9 @@ body.fleet-page .about-intro p {
 }
 
 @media (max-width: 900px) {
-    .logo-image {
-        width: 48px;
-        height: 48px;
-    }
-
     .logo-word {
-        width: 125px;
-        height: 38px;
+        width: min(220px, 42vw);
+        height: auto;
     }
 }
 
