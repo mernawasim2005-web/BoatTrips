@@ -25,7 +25,7 @@ try {
                 : (boat.image ? [boat.image] : []);
 
             const imagesHTML = images.map((img, i) => `
-                <img src="${img}" alt="${boat.name}" 
+                <img src="${img}" alt="${boat.name}" loading="lazy" decoding="async"
                      class="fleet-slide ${i === 0 ? "active" : ""}" 
                      data-boat="${boatIndex}" data-index="${i}">
             `).join("");
@@ -33,7 +33,7 @@ try {
             return `
                 <div class="fleet-card">
                     <div class="fleet-image">
-                        ${images.length > 0 ? imagesHTML : "🚤"}
+                        ${images.length > 0 ? imagesHTML : `<svg class="fleet-placeholder" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="5" r="3"></circle><path d="M12 22V8"></path><path d="M5 12H2a10 10 0 0 0 20 0h-3"></path></svg>`}
                         ${images.length > 1 ? `
                             <button class="fleet-nav fleet-prev" data-boat="${boatIndex}">‹</button>
                             <button class="fleet-nav fleet-next" data-boat="${boatIndex}">›</button>
@@ -41,7 +41,7 @@ try {
                     </div>
                     <h3>${boat.name}</h3>
                     <p>${boat.description || "A great boat for your next adventure."}</p>
-                    <p class="fleet-capacity">👥 Up to ${boat.capacity} people</p>
+                    <p class="fleet-capacity">Up to ${boat.capacity} people</p>
                 </div>
             `;
         }).join("");
@@ -66,7 +66,12 @@ try {
         });
     }
 
+    fleetContainer.classList.add("is-loaded");
+    fleetContainer.setAttribute("aria-busy", "false");
+
 } catch (error) {
     console.error("Error loading fleet:", error);
     fleetContainer.innerHTML = "<p>Failed to load our fleet. Please try again later.</p>";
+    fleetContainer.classList.add("is-loaded");
+    fleetContainer.setAttribute("aria-busy", "false");
 }

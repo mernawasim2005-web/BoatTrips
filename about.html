@@ -7,10 +7,10 @@
 
     <title>About Us</title>
 
-    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="style.css?v=17">
 </head>
 
-<body>
+<body class="about-page">
 
     <!-- Navigation -->
     <nav>
@@ -20,7 +20,7 @@
             <a href="index.html">Home</a>
             <a href="trips.html">Trips</a>
             <a href="about.html">About Us</a>
-            <a href="#">Contact</a>
+            <a href="contact.html">Contact</a>
             <a href="fleet.html">Our Fleet</a>
         </div>
 
@@ -28,20 +28,96 @@
     </nav>
 
 
-    <!-- About Intro -->
-    <section class="about-intro">
+    <!-- About Header -->
+    <section class="about-hero">
 
-        <h1>Boat Trips</h1>
+        <p class="about-eyebrow">About Us</p>
 
-        <p>
-    We are a passionate team dedicated to giving you the best
-    boat trip experience in the Red Sea.
-</p>
+        <h1>A local Red Sea crew, built around the guests</h1>
 
-<p>
-    From dolphin encounters to snorkeling adventures, we make
-    sure every trip is safe, fun, and unforgettable.
-</p>
+        <p class="about-lead">
+            We are a passionate team dedicated to giving you the best boat trip
+            experience in the Red Sea, from the first message to the last swim.
+        </p>
+
+        <div class="about-chips">
+            <span class="about-chip">Locally operated</span>
+            <span class="about-chip">Small group trips</span>
+            <span class="about-chip">Family friendly</span>
+        </div>
+
+    </section>
+
+
+    <!-- Our Story -->
+    <section class="about-story">
+
+        <div class="about-split">
+
+            <div class="about-split-text">
+                <h2>How we work</h2>
+                <p>
+                    From dolphin encounters to snorkeling adventures, we make sure
+                    every trip is safe, fun and unforgettable. Boats are checked and
+                    cleaned before each departure, and every group gets a short
+                    briefing before you leave the marina.
+                </p>
+                <p>
+                    Booking is handled by the same people who will be on the boat
+                    with you, so questions about dates, meeting points or extras
+                    get answered by someone who knows the answer.
+                </p>
+                <div class="hero-actions">
+                    <a href="trips.html" class="hero-btn hero-btn-primary">Explore Trips</a>
+                    <a href="contact.html" class="hero-btn hero-btn-ghost">Contact Us</a>
+                </div>
+            </div>
+
+            <div class="about-split-media">
+                <img src="images/snorkeling.jpeg" alt="Snorkeling in the Red Sea" loading="lazy" decoding="async">
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- What We Run -->
+    <section class="about-offers">
+
+        <h2>What we run</h2>
+
+        <p class="section-description">
+            Three ways to spend a day on the water
+        </p>
+
+        <div class="features-container">
+
+            <div class="feature-card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="5" r="3"></circle><path d="M12 22V8"></path><path d="M5 12H2a10 10 0 0 0 20 0h-3"></path></svg>
+            </div>
+            <h3>Day Boat Trips</h3>
+                <p>Full day trips with beach stops and plenty of time to swim.</p>
+            </div>
+
+            <div class="feature-card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <h3>Private &amp; Groups</h3>
+                <p>Private charters and group bookings shaped around your own pace.</p>
+            </div>
+
+            <div class="feature-card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+            </div>
+            <h3>Snorkeling &amp; Dolphins</h3>
+                <p>Reef snorkel trips and dolphin encounters in clear Red Sea water.</p>
+            </div>
+
+        </div>
 
     </section>
 
@@ -58,21 +134,25 @@
         <div class="team-container">
 
             <div class="team-card">
-                <div class="team-avatar">👤</div>
+                <div class="team-avatar team-photo">
+                    <img src="pavly_owner.jpeg" alt="Pavly Emil" loading="lazy" decoding="async">
+                </div>
                 <h3>Pavly Emil</h3>
-                <p><a href="tel:01272735606">01272735606</a></p>
+                <p><a href="tel:01271311016">0127 131 1016</a></p>
             </div>
 
             <div class="team-card">
-                <div class="team-avatar">👤</div>
+                <div class="team-avatar team-initials">PG</div>
                 <h3>Pola George</h3>
-                <p><a href="tel:0128 1865980">0128 1865980</a></p>
+                <p><a href="tel:01281865980">0128 1865980</a></p>
             </div>
 
             <div class="team-card">
-                <div class="team-avatar">👤</div>
+                <div class="team-avatar team-photo">
+                    <img src="george_owner.jpeg" alt="George Botros" loading="lazy" decoding="async">
+                </div>
                 <h3>George Botros</h3>
-                <p><a href="tel:0101 8172377">0101 8172377</a></p>
+                <p><a href="tel:01018172377">0101 8172377</a></p>
             </div>
 
         </div>
@@ -89,22 +169,71 @@
 
             <div class="feature-card">
                 <h3>Safe Trips</h3>
-                <p>Well-maintained boats and experienced staff for a safe journey.</p>
+                <p>Well maintained boats, life jackets for everyone and an experienced crew.</p>
             </div>
 
             <div class="feature-card">
                 <h3>Fair Prices</h3>
-                <p>Transparent pricing with no hidden fees.</p>
+                <p>Transparent pricing with no hidden fees added on the day.</p>
             </div>
 
             <div class="feature-card">
                 <h3>Great Experience</h3>
-                <p>Unforgettable memories with every trip.</p>
+                <p>Unforgettable memories with every trip, from sunrise to sunset.</p>
             </div>
 
         </div>
 
     </section>
+
+
+    <!-- Call To Action -->
+    <section class="cta-band">
+
+        <h2>Ready to book your trip?</h2>
+
+        <p>Pick a trip, choose your extras and we will confirm the rest.</p>
+
+        <div class="hero-actions">
+            <a href="trips.html" class="hero-btn hero-btn-primary">Explore Trips</a>
+            <a href="contact.html" class="hero-btn hero-btn-ghost">Talk to Us</a>
+        </div>
+
+    </section>
+
+
+    <!-- Footer -->
+    <footer class="site-footer">
+
+        <div class="site-footer-inner">
+
+            <div>
+                <h3>AQUAVIDA</h3>
+                <p>Boat trips, islands and snorkeling experiences in the Red Sea.</p>
+            </div>
+
+            <div>
+                <h3>Explore</h3>
+                <div class="site-footer-links">
+                    <a href="trips.html">Our Trips</a>
+                    <a href="fleet.html">Our Fleet</a>
+                    <a href="about.html">About Us</a>
+                    <a href="contact.html">Contact</a>
+                </div>
+            </div>
+
+            <div>
+                <h3>Contact</h3>
+                <div class="site-footer-links">
+                    <a href="https://wa.me/201223595411" target="_blank" rel="noopener">Technical support: 0122 359 5411</a>
+                </div>
+            </div>
+
+        </div>
+
+        <p class="site-footer-bottom">&copy; AQUAVIDA. All rights reserved.</p>
+
+    </footer>
 
 </body>
 

@@ -75,6 +75,7 @@ try {
             return `
                 <div class="trip-card">
                     <img src="${tripImage}" alt="${trip.name}" class="trip-image"
+                        loading="lazy" decoding="async"
                          onerror="this.onerror=null;this.src='white_island.jpeg';">
                     <h2>${trip.name}</h2>
                     <a href="trips-details.html?id=${doc.id}" class="view-btn">
@@ -84,7 +85,11 @@ try {
             `;
         }).join("");
     }
+    tripContainer.classList.add("is-loaded");
+    tripContainer.setAttribute("aria-busy", "false");
 } catch (error) {
     console.error("Error loading trips:", error);
     tripContainer.innerHTML = "<p>Failed to load trips. Please try again later.</p>";
+    tripContainer.classList.add("is-loaded");
+    tripContainer.setAttribute("aria-busy", "false");
 }

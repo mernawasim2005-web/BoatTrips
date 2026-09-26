@@ -7,7 +7,8 @@
 
     <title>Our Fleet</title>
 
-    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="style.css?v=17">
+    <link rel="preload" as="image" href="images/boat1.jpeg" fetchpriority="high">
 </head>
 
 <body class="fleet-page">
@@ -21,7 +22,7 @@
             <a href="index.html">Home</a>
             <a href="trips.html">Trips</a>
             <a href="about.html">About Us</a>
-            <a href="#">Contact</a>
+            <a href="contact.html">Contact</a>
             <a href="fleet.html">Our Fleet</a>
         </div>
 
@@ -32,7 +33,7 @@
 
     <!-- Fleet Intro -->
 <section class="about-intro fleet-intro">
-    <h1>Our Fleet 🛥️</h1>
+        <h1>Our Fleet</h1>
     <p>
         Take a look <br> at the boats that will <br>take you on your next
         Red Sea adventure. <br>Comfortable, safe, and ready for fun.
@@ -42,12 +43,18 @@
 
     <!-- Boats -->
     <section class="fleet-section">
-        <div id="fleet-container" class="fleet-container">
-            Loading boats...
+        <div id="fleet-container" class="fleet-container" aria-live="polite" aria-busy="true">
+            <div class="fleet-card fleet-initial-card">
+                <div class="fleet-image">
+                    <img src="images/boat1.jpeg" alt="Our fleet" width="250" height="180" fetchpriority="high">
+                </div>
+                <h3>Our Fleet</h3>
+                <p>Comfortable, safe, and ready for your next adventure.</p>
+            </div>
         </div>
     </section>
 
-    <script type="module" src="fleet.js"></script>
+    <script type="module" src="fleet.js?v=16"></script>
 
 
 

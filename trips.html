@@ -7,7 +7,8 @@
 
     <title>Our Trips</title>
 
-    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="style.css?v=17">
+    <link rel="preload" as="image" href="images/white_island.jpeg" fetchpriority="high">
 </head>
 
 <body>
@@ -20,7 +21,7 @@
             <a href="index.html">Home</a>
             <a href="trips.html">Trips</a>
             <a href="about.html">About Us</a>
-            <a href="#">Contact</a>
+            <a href="contact.html">Contact</a>
             <a href="fleet.html">Our Fleet</a>
         </div>
 
@@ -31,22 +32,29 @@
 
     <section class="trips">
 
-    <video class="trips-video" autoplay muted loop playsinline>
-        <source src="trips-waves-video.mp4" type="video/mp4">
+    <video class="trips-video" autoplay muted loop playsinline preload="metadata" poster="images/hero2.jpeg">
+        <source data-src="trips-waves-video.mp4" type="video/mp4" media="(min-width: 768px)">
     </video>
 
     <div class="trips-content">
-        <h1>Our Boat Trips 🚤</h1>
+        <h1>Our Boat Trips</h1>
 
         <p class="section-description">
             Choose your perfect adventure in the Red Sea
         </p>
 
-        <div id="trip-container" class="trip-container"></div>
+        <div id="trip-container" class="trip-container" aria-live="polite" aria-busy="true">
+            <div class="trip-card trip-initial-card">
+                <img src="images/white_island.jpeg" alt="Red Sea boat trip" class="trip-image" width="290" height="180" fetchpriority="high">
+                <h2>Red Sea Boat Trips</h2>
+                <a href="trips.html" class="view-btn">Explore Trips</a>
+            </div>
+        </div>
     </div>
 
 </section>
 
+<script src="js/defer-media.js" defer></script>
 
 
 

@@ -91,7 +91,42 @@ if (!tripId) {
             const trip = tripSnap.data();
             const addons = trip.addons || [];
             const schedule = trip.schedule || [];
-            const boatOptions = trip.boatOptions || [];
+            const configuredBoatOptions = trip.boatOptions || [];
+            let boatOptions = configuredBoatOptions;
+
+            try {
+                const boatsSnapshot = await getDocs(collection(db, "boats"));
+                const configuredById = new Map(configuredBoatOptions.map((boat) => [String(getBoatId(boat)), boat]));
+                const configuredByName = new Map(configuredBoatOptions.map((boat) => [normalizeBoatName(boat.boatName), boat]));
+
+                boatOptions = boatsSnapshot.docs.map((boatDoc) => {
+                    const boat = boatDoc.data();
+                    const configured = configuredById.get(boatDoc.id) || configuredByName.get(normalizeBoatName(boat.name));
+                    return configured
+                        ? {
+                            ...configured,
+                            boatId: boatDoc.id,
+                            boatName: boat.name,
+                            images: boat.images || (boat.image ? [boat.image] : configured.images),
+                            capacity: boat.capacity || configured.capacity
+                        }
+                        : {
+                            boatId: boatDoc.id,
+                            boatName: boat.name,
+                            images: boat.images || (boat.image ? [boat.image] : []),
+                            capacity: boat.capacity,
+                            price: null
+                        };
+                });
+
+                configuredBoatOptions.forEach((boat) => {
+                    if (!boatOptions.some((option) => String(getBoatId(option)) === String(getBoatId(boat)))) {
+                        boatOptions.push(boat);
+                    }
+                });
+            } catch (error) {
+                console.warn("Could not load the full boat fleet; showing trip boats.", error);
+            }
             const getSlotKey = (slot, boatId) => `${tripId}|${boatId}|${slot.date}|${slot.startTime}|${slot.endTime}`;
 
             async function getBookedSlotKeys(boatId) {
@@ -208,7 +243,7 @@ if (!tripId) {
                         </div>
                         ${thumbnailsHTML}
                         <h4>${opt.boatName}</h4>
-                        <p>${opt.price} EGP / person</p>
+                        <p>${opt.price == null ? "Price on request" : `${opt.price} EGP / person`}</p>
                         <p class="boat-option-capacity">Up to ${opt.capacity} people</p>
                     </div>
                 `;
@@ -352,6 +387,10 @@ if (!tripId) {
                     selectedBoat = boatOptions[index];
                     selectedScheduleSlot = null;
 
+                    if (selectedBoat.price == null) {
+                        document.getElementById("total-price").textContent = "Price on request";
+                    }
+
                     document.getElementById("selected-boat-name").textContent = selectedBoat.boatName;
                     document.getElementById("people-count").max = selectedBoat.capacity;
                     document.getElementById("people-count").value = 1;
@@ -478,6 +517,11 @@ if (!tripId) {
             function updateTotal() {
                 if (!selectedBoat) return;
 
+                if (selectedBoat.price == null) {
+                    document.getElementById("total-price").textContent = "Price on request";
+                    return;
+                }
+
                 const peopleCount = parseInt(document.getElementById("people-count").value) || 1;
                 document.querySelectorAll(".addon-people-count").forEach((input) => {
                     input.max = peopleCount;
@@ -515,6 +559,11 @@ if (!tripId) {
             document.getElementById("book-btn").addEventListener("click", async () => {
                 if (!selectedBoat) {
                     alert("Please select a boat first.");
+                    return;
+                }
+
+                if (selectedBoat.price == null) {
+                    alert("Please add a price for this boat in the trip settings before booking.");
                     return;
                 }
 

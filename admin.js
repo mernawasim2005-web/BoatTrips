@@ -1,7 +1,7 @@
-import { onAuthStateChanged, signOut } 
+import { onAuthStateChanged, signOut }
     from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
-import { collection, getDocs, deleteDoc, doc, addDoc, updateDoc } 
+import { collection, getDocs, deleteDoc, doc, addDoc, updateDoc, deleteField }
     from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 import { auth, db } from "./firebase.js";
@@ -12,6 +12,7 @@ const logoutBtn = document.getElementById("logout-btn");
 let editingTripId = null;
 let currentSchedule = [];
 let editingBoatId = null;
+let editingOperatorId = null;
 let currentSection = "overview";
 let editingExpenseId = null;
 let editingBookingId = null;
@@ -26,7 +27,62 @@ let adminCalendarBoatId = "";
 let adminCalendarBookings = [];
 let adminCalendarSlots = [];
 
+const defaultOperatorDetails = `🛟 August list 🛟
+▪️ Island+diving
+1300 l.e
+▪️ 2in1 Hula orange 1400 l.e
+▪️ 3in1 Hula orange diving 1700 l.e
+▪️ Magawesh island 950 l.e
+▪️ orange island 1000 l.e
+▪️ Hula hula island 950 l.e
+▪️ intro diving 1000 l.e
+▪️ professional diving 1300 l.e without equipment
+▪️Equipment 500 l.e
+▪️ dolphin house 800 l.e
+▪️ transfer makady sahl hashesh 200 l.e per pax
+▪️ safaga elgona 300 l.e`;
 
+function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    })[character]);
+}
+
+function getOperatorStatus(value) {
+    const status = String(value || "active").trim().toLowerCase();
+    return ["active", "on_leave", "inactive"].includes(status) ? status : "active";
+}
+
+const BOOKING_SOURCE_AQUAVIDA = "AQUAVIDA";
+const BOOKING_SOURCE_OPERATOR = "OPERATOR";
+const BOOKING_SOURCE_OPERATOR_PREFIX = "operator:";
+
+function getBookingStatus(booking) {
+    const status = String(booking.status || "pending").trim().toLowerCase();
+    return ["pending", "confirmed", "cancelled"].includes(status) ? status : "pending";
+}
+
+function getBookingSource(booking) {
+    return String(booking.bookingSource || "").trim().toUpperCase() === BOOKING_SOURCE_OPERATOR
+        ? BOOKING_SOURCE_OPERATOR
+        : BOOKING_SOURCE_AQUAVIDA;
+}
+
+function getBookingSourceLabel(booking) {
+    return getBookingSource(booking) === BOOKING_SOURCE_OPERATOR
+        ? (booking.sourceOperatorName || "Other operator")
+        : "AQUAVIDA";
+}
+
+function getBookingSourceSelectValue(booking) {
+    return getBookingSource(booking) === BOOKING_SOURCE_OPERATOR
+        ? `${BOOKING_SOURCE_OPERATOR_PREFIX}${booking.sourceOperatorId || ""}`
+        : BOOKING_SOURCE_AQUAVIDA;
+}
 
 function formatScheduleText(slot) {
     return slot.date;
@@ -101,6 +157,7 @@ function showSection(section) {
     if (section === "bookings") renderBookingsSection();
     if (section === "trips") renderTripsSection();
     if (section === "boats") renderBoatsSection();
+    if (section === "operators") renderOperatorsSection();
     if (section === "revenue") renderRevenueSection();
     if (section === "expenses") renderExpensesSection();
 }
@@ -804,6 +861,327 @@ function renderBoatsSection() {
     loadBoatPerformanceChart();
 }
 
+function renderOperatorsSection() {
+    adminContent.innerHTML = `
+        <div class="dashboard-titlebar">
+            <div>
+                <span>OPERATOR ANALYTICS</span>
+                <h2>Team Performance</h2>
+            </div>
+            <small>Live staffing and booking data</small>
+        </div>
+        <div id="operator-summary-grid" class="overview-grid">Loading...</div>
+        <div class="dashboard-summary-layout">
+            <section class="dashboard-chart">
+                <div class="dashboard-chart-heading">
+                    <h3>Operator status</h3>
+                    <span>Current availability</span>
+                </div>
+                <div class="booking-mix-content">
+                    <div id="operator-status-donut" class="booking-mix-donut" role="img" aria-label="Operator status distribution"></div>
+                    <div id="operator-status-legend" class="booking-mix-legend">Loading...</div>
+                </div>
+            </section>
+            <section class="dashboard-chart">
+                <div class="dashboard-chart-heading">
+                    <h3>Contact readiness</h3>
+                    <span>Complete operator profiles</span>
+                </div>
+                <div id="operator-contact-chart" class="status-chart">Loading...</div>
+            </section>
+        </div>
+        <section class="dashboard-chart admin-performance-section">
+            <div class="dashboard-chart-heading">
+                <h3>Operator performance</h3>
+                <span>Confirmed revenue and booking volume</span>
+            </div>
+            <div id="operator-performance-chart" class="performance-chart">Loading...</div>
+        </section>
+        <div class="operator-list-toolbar">
+            <h3>Operator directory</h3>
+            <button id="add-operator-btn" class="book-btn">+ Add Operator</button>
+        </div>
+        <div id="operator-form-container"></div>
+        <div id="admin-operators-list">Loading operators...</div>
+    `;
+
+    document.getElementById("add-operator-btn").addEventListener("click", () => {
+        editingOperatorId = null;
+        showOperatorForm();
+    });
+
+    loadOperatorsList();
+}
+
+async function loadOperatorsList() {
+    const listContainer = document.getElementById("admin-operators-list");
+    if (!listContainer) return;
+
+    try {
+        const snapshot = await getDocs(collection(db, "operators"));
+        const operators = snapshot.docs.map((operatorDoc) => ({
+            id: operatorDoc.id,
+            ...operatorDoc.data()
+        }));
+
+        renderOperatorProfileAnalytics(operators);
+        loadOperatorPerformanceChart(operators);
+
+        if (!operators.length) {
+            listContainer.innerHTML = "<p>No operators yet. Add one above.</p>";
+            return;
+        }
+
+        listContainer.innerHTML = operators.map((operator) => {
+            const statusLabel = {
+                active: "Active",
+                on_leave: "On leave",
+                inactive: "Inactive"
+            }[getOperatorStatus(operator.status)];
+            const contact = [operator.email, operator.notes].filter(Boolean).map(escapeHtml).join(" — ");
+            return `
+                <div class="admin-boat-card">
+                    <div class="admin-trip-row">
+                        <span><strong>${escapeHtml(operator.name)}</strong> — ${statusLabel}${operator.phone ? ` — ${escapeHtml(operator.phone)}` : ""}</span>
+                        <div>
+                            <button class="edit-operator-btn" data-id="${escapeHtml(operator.id)}">Edit</button>
+                            <button class="delete-operator-btn" data-id="${escapeHtml(operator.id)}">Delete</button>
+                        </div>
+                    </div>
+                    ${contact ? `<p>${contact}</p>` : ""}
+                    ${operator.details ? `<p class="operator-details">${escapeHtml(operator.details)}</p>` : ""}
+                </div>
+            `;
+        }).join("");
+
+        document.querySelectorAll(".edit-operator-btn").forEach((button) => {
+            button.addEventListener("click", () => editOperator(button.dataset.id));
+        });
+        document.querySelectorAll(".delete-operator-btn").forEach((button) => {
+            button.addEventListener("click", () => deleteOperator(button.dataset.id));
+        });
+    } catch (error) {
+        console.error("Error loading operators:", error);
+        listContainer.innerHTML = "<p>Failed to load operators.</p>";
+    }
+}
+
+function renderOperatorProfileAnalytics(operators) {
+    const summaryGrid = document.getElementById("operator-summary-grid");
+    if (!summaryGrid) return;
+
+    const statusCounts = { active: 0, on_leave: 0, inactive: 0 };
+    let emailCount = 0;
+    let phoneCount = 0;
+    let completeContactCount = 0;
+
+    operators.forEach((operator) => {
+        statusCounts[getOperatorStatus(operator.status)]++;
+        const hasEmail = Boolean(String(operator.email || "").trim());
+        const hasPhone = Boolean(String(operator.phone || "").trim());
+        if (hasEmail) emailCount++;
+        if (hasPhone) phoneCount++;
+        if (hasEmail && hasPhone) completeContactCount++;
+    });
+
+    const total = operators.length;
+    const activePercent = total ? Math.round(statusCounts.active / total * 100) : 0;
+    const onLeavePercent = total ? Math.round(statusCounts.on_leave / total * 100) : 0;
+
+    summaryGrid.innerHTML = `
+        <div class="overview-card">
+            <span class="overview-number">${total}</span>
+            <span class="overview-label">Total Operators</span>
+        </div>
+        <div class="overview-card">
+            <span class="overview-number">${statusCounts.active}</span>
+            <span class="overview-label">Active (${activePercent}%)</span>
+        </div>
+        <div class="overview-card">
+            <span id="operator-booking-coverage" class="overview-number">0%</span>
+            <span class="overview-label">Booking Coverage</span>
+        </div>
+        <div class="overview-card">
+            <span id="operator-confirmed-revenue" class="overview-number">0 EGP</span>
+            <span class="overview-label">Confirmed Revenue</span>
+        </div>
+    `;
+
+    const statusDonut = document.getElementById("operator-status-donut");
+    const activeEnd = activePercent;
+    const onLeaveEnd = activeEnd + onLeavePercent;
+    statusDonut.style.background = total
+        ? `conic-gradient(#35a66f 0 ${activeEnd}%, #4b8ac7 ${activeEnd}% ${onLeaveEnd}%, #d9534f ${onLeaveEnd}% 100%)`
+        : "#dce7eb";
+
+    const statusLegend = document.getElementById("operator-status-legend");
+    statusLegend.innerHTML = `
+        <div class="booking-mix-legend-row"><span><i class="legend-dot confirmed-dot"></i>Active</span><strong>${statusCounts.active}</strong></div>
+        <div class="booking-mix-legend-row"><span><i class="legend-dot on-leave-dot"></i>On leave</span><strong>${statusCounts.on_leave}</strong></div>
+        <div class="booking-mix-legend-row"><span><i class="legend-dot inactive-dot"></i>Inactive</span><strong>${statusCounts.inactive}</strong></div>
+    `;
+
+    const contactRows = [
+        { label: "Phone provided", count: phoneCount, className: "trip-demand-bar" },
+        { label: "Email provided", count: emailCount, className: "booking-volume-bar" },
+        { label: "Complete contact", count: completeContactCount, className: "status-confirmed" }
+    ];
+    const contactChart = document.getElementById("operator-contact-chart");
+    contactChart.innerHTML = contactRows.map((row) => {
+        const percent = total ? Math.round(row.count / total * 100) : 0;
+        return `
+            <div class="status-chart-row">
+                <div class="status-chart-meta"><span>${row.label}</span><strong>${row.count}/${total} · ${percent}%</strong></div>
+                <div class="status-chart-track"><span class="status-chart-bar ${row.className}" style="width:${percent}%"></span></div>
+            </div>
+        `;
+    }).join("");
+}
+
+async function loadOperatorPerformanceChart(operators) {
+    const container = document.getElementById("operator-performance-chart");
+    if (!container) return;
+
+    const revenueCard = document.getElementById("operator-confirmed-revenue");
+    const coverageCard = document.getElementById("operator-booking-coverage");
+    if (!operators.length) {
+        container.innerHTML = "<p>Add operators to start tracking performance.</p>";
+        return;
+    }
+
+    try {
+        const bookingsSnapshot = await getDocs(collection(db, "bookings"));
+        const operatorKeysByName = new Map();
+        const stats = {};
+
+        operators.forEach((operator) => {
+            const name = String(operator.name || "Unnamed operator").trim();
+            const normalizedName = name.toLowerCase();
+            const matchingIds = operatorKeysByName.get(normalizedName) || [];
+            matchingIds.push(operator.id);
+            operatorKeysByName.set(normalizedName, matchingIds);
+            stats[operator.id] = { name, revenue: 0, bookings: 0 };
+        });
+
+        bookingsSnapshot.forEach((bookingDoc) => {
+            const booking = bookingDoc.data();
+            if (isCancelledBooking(booking)) return;
+            const captainName = String(booking.captainName || "").trim().toLowerCase();
+            const hasBookingSource = typeof booking.bookingSource === "string" && booking.bookingSource.trim();
+            const operatorId = booking.sourceOperatorId
+                || (!hasBookingSource ? operatorKeysByName.get(captainName)?.[0] : "");
+            if (!operatorId || !stats[operatorId]) return;
+            stats[operatorId].bookings++;
+            if (isConfirmedBooking(booking)) {
+                stats[operatorId].revenue += Number(booking.totalPrice) || 0;
+            }
+        });
+
+        const performanceRows = Object.values(stats).filter((row) => row.bookings > 0);
+        const matchedOperatorCount = performanceRows.length;
+        const confirmedRevenue = performanceRows.reduce((total, row) => total + row.revenue, 0);
+        const coveragePercent = operators.length ? Math.round(matchedOperatorCount / operators.length * 100) : 0;
+
+        revenueCard.textContent = `${confirmedRevenue.toLocaleString()} EGP`;
+        coverageCard.textContent = `${coveragePercent}%`;
+        const performanceStats = Object.fromEntries(
+            Object.entries(stats).filter(([, row]) => row.bookings > 0)
+        );
+        renderPerformanceChart(container, performanceStats, 7, "Operator");
+        container.insertAdjacentHTML("beforeend", "<p class=\"operator-chart-note\">Bookings use the selected operator source; older bookings fall back to captain name.</p>");
+    } catch (error) {
+        console.error("Error loading operator performance:", error);
+        container.innerHTML = "<p>Failed to load operator performance.</p>";
+    }
+}
+
+function showOperatorForm(operator = null) {
+    const formContainer = document.getElementById("operator-form-container");
+    const details = operator?.details ?? defaultOperatorDetails;
+    const status = getOperatorStatus(operator?.status);
+    formContainer.innerHTML = `
+        <form id="operator-form" class="admin-form">
+            <h4>${editingOperatorId ? "Edit Operator" : "Add Operator"}</h4>
+            <label>Name: <input type="text" id="operator-name" value="${escapeHtml(operator?.name || "")}" required></label>
+            <label>Phone: <input type="tel" id="operator-phone" value="${escapeHtml(operator?.phone || "")}"></label>
+            <label>Email: <input type="email" id="operator-email" value="${escapeHtml(operator?.email || "")}"></label>
+            <label>Status:
+                <select id="operator-status">
+                    <option value="active" ${status === "active" ? "selected" : ""}>Active</option>
+                    <option value="on_leave" ${status === "on_leave" ? "selected" : ""}>On leave</option>
+                    <option value="inactive" ${status === "inactive" ? "selected" : ""}>Inactive</option>
+                </select>
+            </label>
+            <label>Packages / details: <textarea id="operator-details" rows="10">${escapeHtml(details)}</textarea></label>
+            <label>Notes: <textarea id="operator-notes">${escapeHtml(operator?.notes || "")}</textarea></label>
+            <div>
+                <button type="submit" class="book-btn">${editingOperatorId ? "Update Operator" : "Add Operator"}</button>
+                <button type="button" id="cancel-operator-form-btn">Cancel</button>
+            </div>
+        </form>
+    `;
+
+    document.getElementById("cancel-operator-form-btn").addEventListener("click", () => {
+        formContainer.innerHTML = "";
+        editingOperatorId = null;
+    });
+    document.getElementById("operator-form").addEventListener("submit", handleOperatorFormSubmit);
+}
+
+async function handleOperatorFormSubmit(event) {
+    event.preventDefault();
+    const operator = {
+        name: document.getElementById("operator-name").value.trim(),
+        phone: document.getElementById("operator-phone").value.trim(),
+        email: document.getElementById("operator-email").value.trim(),
+        status: document.getElementById("operator-status").value,
+        details: document.getElementById("operator-details").value.trim(),
+        notes: document.getElementById("operator-notes").value.trim(),
+        updatedAt: new Date().toISOString()
+    };
+
+    if (!operator.name) return;
+
+    try {
+        if (editingOperatorId) {
+            await updateDoc(doc(db, "operators", editingOperatorId), operator);
+        } else {
+            await addDoc(collection(db, "operators"), { ...operator, createdAt: new Date().toISOString() });
+        }
+        editingOperatorId = null;
+        document.getElementById("operator-form-container").innerHTML = "";
+        loadOperatorsList();
+    } catch (error) {
+        console.error("Error saving operator:", error);
+        alert("Could not save the operator.");
+    }
+}
+
+async function editOperator(operatorId) {
+    try {
+        const snapshot = await getDocs(collection(db, "operators"));
+        const operatorDoc = snapshot.docs.find((item) => item.id === operatorId);
+        if (!operatorDoc) return;
+        editingOperatorId = operatorId;
+        showOperatorForm(operatorDoc.data());
+    } catch (error) {
+        console.error("Error loading operator:", error);
+        alert("Could not load the operator.");
+    }
+}
+
+async function deleteOperator(operatorId) {
+    if (!confirm("Delete this operator?")) return;
+
+    try {
+        await deleteDoc(doc(db, "operators", operatorId));
+        loadOperatorsList();
+    } catch (error) {
+        console.error("Error deleting operator:", error);
+        alert("Could not delete the operator.");
+    }
+}
+
 function renderRevenueSection() {
     adminContent.innerHTML = `
         <h2>Revenue</h2>
@@ -822,11 +1200,45 @@ function renderRevenueSection() {
 
 /* ---------------- TRIPS ---------------- */
 
+function buildBookingSourceOptions(booking, operators) {
+    const currentValue = getBookingSourceSelectValue(booking);
+    const options = [
+        `<option value="${BOOKING_SOURCE_AQUAVIDA}" ${currentValue === BOOKING_SOURCE_AQUAVIDA ? "selected" : ""}>AQUAVIDA</option>`
+    ];
+    let currentOperatorFound = currentValue === BOOKING_SOURCE_AQUAVIDA;
+
+    [...operators]
+        .sort((first, second) => String(first.name || "").localeCompare(String(second.name || "")))
+        .forEach((operator) => {
+            const value = `${BOOKING_SOURCE_OPERATOR_PREFIX}${operator.id}`;
+            const selected = value === currentValue ? " selected" : "";
+            if (selected) currentOperatorFound = true;
+            options.push(`<option value="${escapeHtml(value)}"${selected}>${escapeHtml(operator.name || "Unnamed operator")}</option>`);
+        });
+
+    if (!currentOperatorFound) {
+        options.push(`<option value="${escapeHtml(currentValue)}" selected>${escapeHtml(getBookingSourceLabel(booking))}</option>`);
+    }
+
+    return options.join("");
+}
+
 async function loadBookingsList() {
     const listContainer = document.getElementById("admin-bookings-list");
 
     try {
-        const snapshot = await getDocs(collection(db, "bookings"));
+        const operatorsRequest = getDocs(collection(db, "operators")).catch((error) => {
+            console.error("Error loading booking source operators:", error);
+            return null;
+        });
+        const [snapshot, operatorsSnapshot] = await Promise.all([
+            getDocs(collection(db, "bookings")),
+            operatorsRequest
+        ]);
+        const operators = [];
+        operatorsSnapshot?.forEach((operatorDoc) => {
+            operators.push({ id: operatorDoc.id, ...operatorDoc.data() });
+        });
 
         if (snapshot.empty) {
             listContainer.innerHTML = "<p>No bookings yet.</p>";
@@ -864,36 +1276,53 @@ async function loadBookingsList() {
             listContainer.innerHTML = "<p>No bookings match your search.</p>";
             return;
         }
-
         let html = "";
         bookings.forEach((booking) => {
-            const date = new Date(booking.createdAt).toLocaleString();
-            const status = booking.status || "pending";
+            const date = getBookingDate(booking.createdAt)?.toLocaleString() || "Unknown";
+            const status = getBookingStatus(booking);
+            const source = getBookingSource(booking);
+            const sourceLabel = getBookingSourceLabel(booking);
+            const sourceClass = source === BOOKING_SOURCE_OPERATOR ? "source-operator" : "source-aquavida";
+            const sourceOptions = buildBookingSourceOptions(booking, operators);
+            const cost = Number(booking.cost) || 0;
+            const totalPrice = Number(booking.totalPrice) || 0;
+            const peopleCount = Number(booking.peopleCount) || 0;
+            const profit = totalPrice - cost;
+            const addons = (booking.addons || []).map((addon) => {
+                const name = typeof addon === "string" ? addon : addon.name;
+                const addonPeople = typeof addon === "string" ? "" : addon.peopleCount;
+                return `${escapeHtml(name || "")}${addonPeople ? ` (${escapeHtml(addonPeople)} people)` : ""}`;
+            }).join(", ");
 
-          
-
-
-const cost = booking.cost || 0;
-const profit = (booking.totalPrice || 0) - cost;
-
-html += `
+            html += `
     <div class="admin-booking-row">
         <div class="booking-row-header">
-            <p><strong>${booking.tripName}</strong></p>
-            <span class="status-badge status-${status}">${status}</span>
+            <p><strong>${escapeHtml(booking.tripName || "Unnamed trip")}</strong></p>
+            <div class="booking-row-badges">
+                <span class="status-badge ${sourceClass}">${escapeHtml(sourceLabel)}</span>
+                <span class="status-badge status-${status}">${status}</span>
+            </div>
         </div>
-        <p>👤 ${booking.customerName || "N/A"}</p>
-        <p>🛥️ ${booking.boatName || "Not assigned"}</p>
-        <p>👨‍✈️ ${booking.captainName || "Not assigned"}</p>
-        <p>📅 ${booking.scheduleText}</p>
-        <p>👥 ${booking.peopleCount} people</p>
-        ${booking.addons && booking.addons.length > 0 ? `<p>➕ ${booking.addons.map((addon) => typeof addon === "string" ? addon : `${addon.name}${addon.peopleCount ? ` (${addon.peopleCount} people)` : ""}`).join(", ")}</p>` : ""}
-        <p>💰 Revenue: ${booking.totalPrice} EGP</p>
+        <p>👤 ${escapeHtml(booking.customerName || "N/A")}</p>
+        <p>🛥️ ${escapeHtml(booking.boatName || "Not assigned")}</p>
+        <p>👨‍✈️ ${escapeHtml(booking.captainName || "Not assigned")}</p>
+        <p>📅 ${escapeHtml(booking.scheduleText || "Not specified")}</p>
+        <p>👥 ${peopleCount} people</p>
+        ${addons ? `<p>➕ ${addons}</p>` : ""}
+        <p>💰 Revenue: ${totalPrice.toLocaleString()} EGP</p>
         <p class="booking-date">Booked on: ${date}</p>
+
+        <div class="booking-source-row">
+            <label class="status-select-label">
+                Booking source:
+                <select class="status-select booking-source-select" data-id="${escapeHtml(booking.id)}">${sourceOptions}</select>
+            </label>
+            <button type="button" class="confirm-booking-btn" data-id="${escapeHtml(booking.id)}">${status === "confirmed" ? "Save source" : "Confirm booking"}</button>
+        </div>
 
         <label class="status-select-label">
             Status:
-            <select class="status-select" data-id="${booking.id}">
+            <select class="status-select" data-id="${escapeHtml(booking.id)}">
                 <option value="pending" ${status === "pending" ? "selected" : ""}>Pending</option>
                 <option value="confirmed" ${status === "confirmed" ? "selected" : ""}>Confirmed</option>
                 <option value="cancelled" ${status === "cancelled" ? "selected" : ""}>Cancelled</option>
@@ -903,26 +1332,33 @@ html += `
         <div class="cost-edit-row">
             <label>
                 Cost (EGP):
-                <input type="number" class="cost-input" data-id="${booking.id}" value="${cost}">
+                <input type="number" class="cost-input" data-id="${escapeHtml(booking.id)}" value="${cost}">
             </label>
-            <button type="button" class="save-cost-btn" data-id="${booking.id}">Save</button>
+            <button type="button" class="save-cost-btn" data-id="${escapeHtml(booking.id)}">Save</button>
             <span class="profit-display">Profit: ${profit.toLocaleString()} EGP</span>
         </div>
 
-        <button type="button" class="edit-booking-btn" data-id="${booking.id}">Edit Boat / Captain</button>
-        <button type="button" class="delete-booking-btn" data-id="${booking.id}">Delete Permanently</button>
-        <div class="booking-edit-form-container" data-id="${booking.id}"></div>
+        <button type="button" class="edit-booking-btn" data-id="${escapeHtml(booking.id)}">Edit Boat / Captain</button>
+        <button type="button" class="delete-booking-btn" data-id="${escapeHtml(booking.id)}">Delete Permanently</button>
+        <div class="booking-edit-form-container" data-id="${escapeHtml(booking.id)}"></div>
     </div>
 `;
         });
 
         listContainer.innerHTML = html;
 
-                document.querySelectorAll(".status-select").forEach((select) => {
+        document.querySelectorAll(".status-select:not(.booking-source-select)").forEach((select) => {
             select.addEventListener("change", () => updateBookingStatus(select.dataset.id, select.value));
         });
 
-                document.querySelectorAll(".save-cost-btn").forEach((btn) => {
+        document.querySelectorAll(".confirm-booking-btn").forEach((button) => {
+            button.addEventListener("click", () => {
+                const sourceSelect = document.querySelector(`.booking-source-select[data-id="${button.dataset.id}"]`);
+                confirmBookingWithSource(button.dataset.id, sourceSelect, button);
+            });
+        });
+
+        document.querySelectorAll(".save-cost-btn").forEach((btn) => {
             btn.addEventListener("click", () => {
                 const input = document.querySelector(`.cost-input[data-id="${btn.dataset.id}"]`);
                 const newCost = parseFloat(input.value) || 0;
@@ -952,6 +1388,47 @@ async function updateBookingStatus(bookingId, newStatus) {
     } catch (error) {
         console.error("Error updating booking status:", error);
         alert("Failed to update status. Please try again.");
+    }
+}
+
+async function confirmBookingWithSource(bookingId, sourceSelect, button) {
+    if (!sourceSelect) return;
+
+    const sourceValue = sourceSelect.value;
+    const isOperatorSource = sourceValue.startsWith(BOOKING_SOURCE_OPERATOR_PREFIX);
+    const updates = {
+        status: "confirmed",
+        bookingSource: isOperatorSource ? BOOKING_SOURCE_OPERATOR : BOOKING_SOURCE_AQUAVIDA,
+        confirmedAt: new Date().toISOString()
+    };
+
+    if (isOperatorSource) {
+        const operatorId = sourceValue.slice(BOOKING_SOURCE_OPERATOR_PREFIX.length);
+        const operatorName = sourceSelect.selectedOptions[0]?.textContent.trim();
+        if (!operatorId || !operatorName) {
+            alert("Please choose an operator before confirming this booking.");
+            return;
+        }
+        updates.sourceOperatorId = operatorId;
+        updates.sourceOperatorName = operatorName;
+    } else {
+        updates.sourceOperatorId = deleteField();
+        updates.sourceOperatorName = deleteField();
+    }
+
+    const buttonText = button.textContent;
+    button.disabled = true;
+    button.textContent = "Saving...";
+
+    try {
+        await updateDoc(doc(db, "bookings", bookingId), updates);
+        loadBookingsList();
+        loadBookingCalendar();
+    } catch (error) {
+        console.error("Error confirming booking:", error);
+        button.disabled = false;
+        button.textContent = buttonText;
+        alert("Could not confirm this booking. Please try again.");
     }
 }
 
@@ -1624,10 +2101,10 @@ function renderPerformanceChart(container, stats, resultLimit = 7, entityLabel =
                 <h4>${title}</h4>
                 <div class="vertical-performance-chart">
                     ${metricRows.map((row) => `
-                        <div class="vertical-performance-column" title="${row.name}: ${formatValue(row[metric])}">
+                        <div class="vertical-performance-column" title="${escapeHtml(row.name)}: ${formatValue(row[metric])}">
                             <strong>${formatValue(row[metric])}</strong>
                             <div class="vertical-performance-track"><span class="vertical-performance-bar ${barClass}" style="height:${Math.max((row[metric] / maxValue) * 100, row[metric] ? 8 : 2)}%"></span></div>
-                            <span>${row.name}</span>
+                            <span>${escapeHtml(row.name)}</span>
                         </div>
                     `).join("")}
                 </div>
