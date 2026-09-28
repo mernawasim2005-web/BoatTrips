@@ -3816,6 +3816,17 @@ body.trip-page .activity-section h2 {
     color: #0d3d56;
     margin: 0 0 18px;
     letter-spacing: 0.04em;
+    text-align: center;
+}
+
+.choose-boat-title::after {
+    content: "";
+    display: block;
+    width: 56px;
+    height: 3px;
+    margin: 12px auto 0;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #f5d497, #087ea4);
 }
 
 .selected-boat-box {
