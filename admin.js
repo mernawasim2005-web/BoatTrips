@@ -11,7 +11,7 @@ const logoutBtn = document.getElementById("logout-btn");
 
 // Owner accounts allowed to open this dashboard.
 // Add the owner login email here to lock the dashboard to you only.
-const OWNER_EMAILS = [];
+const OWNER_EMAILS = ["boattrips.admin@gmail.com"];
 const ADMIN_ACCESS_LOCKED = OWNER_EMAILS.length > 0;
 
 let editingTripId = null;
