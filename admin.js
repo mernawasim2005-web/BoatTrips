@@ -989,10 +989,12 @@ async function loadCustomersList() {
 
     try {
         const snapshot = await getDocs(collection(db, "customers"));
-        allCustomers = snapshot.docs.map((customerDoc) => ({
-            id: customerDoc.id,
-            ...customerDoc.data()
-        }));
+        allCustomers = snapshot.docs
+            .map((customerDoc) => ({
+                id: customerDoc.id,
+                ...customerDoc.data()
+            }))
+            .filter((customer) => !OWNER_EMAILS.map((ownerEmail) => ownerEmail.toLowerCase().trim()).includes(String(customer.email || "").toLowerCase()));
 
         renderCustomerSummary(allCustomers);
         renderCustomersList();

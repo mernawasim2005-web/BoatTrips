@@ -7,7 +7,7 @@
 
     <title>My Account</title>
 
-    <link rel="stylesheet" href="style.css?v=23">
+    <link rel="stylesheet" href="style.css?v=24">
 </head>
 
 <body class="account-page">
@@ -101,16 +101,16 @@
 
                 <p class="account-panel-email" id="account-email"></p>
 
-                <ul class="account-meta-list">
+                <ul class="account-meta-list" id="account-meta">
                     <li><span>Member since</span><strong id="account-member-since">-</strong></li>
                     <li><span>Times signed in</span><strong id="account-login-count">-</strong></li>
                     <li><span>Last sign in</span><strong id="account-last-login">-</strong></li>
                 </ul>
 
-                <p class="account-admin-note" id="account-admin-note" hidden>
-                    You are signed in with an admin account.
-                    <a href="admin.html">Open the dashboard</a>
-                </p>
+                <div class="account-admin-note" id="account-admin-note" hidden>
+                    <p class="account-admin-title">You are signed in as the owner.</p>
+                    <a href="admin.html" class="account-admin-btn">Open the admin dashboard</a>
+                </div>
 
                 <p class="account-id-label">Account ID: <span id="account-uid"></span></p>
 
@@ -166,7 +166,7 @@
 
     </footer>
 
-<script type="module" src="account.js?v=2"></script>
+<script type="module" src="account.js?v=3"></script>
 
 </body>
 

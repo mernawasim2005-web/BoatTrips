@@ -12,6 +12,13 @@ import { doc, getDoc, setDoc, updateDoc, serverTimestamp, increment, collection,
 
 import { auth, db } from "./firebase.js";
 
+// The owner account can reach the admin dashboard after signing in here.
+const OWNER_EMAIL = "boattrips.admin@gmail.com";
+
+function isOwnerUser(user) {
+    return Boolean(user) && (user.email || "").toLowerCase() === OWNER_EMAIL;
+}
+
 const tabs = document.getElementById("account-tabs");
 const signinForm = document.getElementById("signin-form");
 const signupForm = document.getElementById("signup-form");
@@ -90,19 +97,26 @@ async function isAdminAccount(uid) {
     }
 }
 
-function renderSignedIn(user, profile) {
+function renderSignedIn(user, profile, isAdmin) {
+    const isOwner = isOwnerUser(user);
     const name = (profile && profile.displayName) || user.displayName || "Guest";
     const firstName = name.split(" ")[0] || "Guest";
 
-    document.getElementById("account-greeting").textContent = `Welcome, ${firstName}`;
-    document.getElementById("account-avatar").textContent = firstName.charAt(0).toUpperCase();
+    document.getElementById("account-greeting").textContent = isOwner ? "Owner signed in" : `Welcome, ${firstName}`;
+    document.getElementById("account-avatar").textContent = isOwner ? "O" : firstName.charAt(0).toUpperCase();
     document.getElementById("account-email").textContent = user.email || "";
     document.getElementById("account-member-since").textContent = formatDate(profile && profile.createdAt);
     document.getElementById("account-login-count").textContent = profile && profile.loginCount ? profile.loginCount : 1;
     document.getElementById("account-last-login").textContent = formatDateTime(profile && profile.lastLoginAt);
     document.getElementById("account-uid").textContent = user.uid;
 
+    document.getElementById("account-admin-note").hidden = !isAdmin;
+    document.getElementById("account-meta").hidden = isOwner;
+    document.getElementById("account-trips").hidden = isOwner;
+
     showPanel("account");
+
+    if (isOwner) return;
     loadCustomerTrips(user);
 }
 
@@ -230,6 +244,8 @@ async function loadProfile(uid) {
 }
 
 async function recordCustomerLogin(user) {
+    if (isOwnerUser(user)) return;
+
     try {
         const profileRef = doc(db, "customers", user.uid);
         const profileSnap = await getDoc(profileRef);
@@ -382,10 +398,10 @@ onAuthStateChanged(auth, async (user) => {
         return;
     }
 
-    const [profile, isAdmin] = await Promise.all([loadProfile(user.uid), isAdminAccount(user.uid)]);
+    const isAdmin = isOwnerUser(user) || await isAdminAccount(user.uid);
+    const profile = isOwnerUser(user) ? null : await loadProfile(user.uid);
 
-    document.getElementById("account-admin-note").hidden = !isAdmin;
-    renderSignedIn(user, profile);
+    renderSignedIn(user, profile, isAdmin);
 });
 
 rememberButtonLabels();
