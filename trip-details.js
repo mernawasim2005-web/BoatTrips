@@ -184,15 +184,6 @@ if (!tripId) {
                     .filter((item) => item && item.image)
                 : [];
 
-            if (trip.background) {
-                const backgroundImage = normalizeImageSource(trip.background, "images/white_island.jpeg");
-                tripDetailsSection.style.backgroundImage = `url('${backgroundImage}')`;
-                tripDetailsSection.style.backgroundSize = "cover";
-                tripDetailsSection.style.backgroundPosition = "center";
-                tripDetailsSection.style.backgroundAttachment = "fixed";
-                tripDetailsSection.classList.add("has-custom-bg");
-            }
-
             // Build add-ons with their optional images.
             const addonsHTML = addons.map((addon, index) => `
                 <label class="addon-item">

@@ -3592,6 +3592,126 @@ body.fleet-page .fleet-next {
 }
 
 
+/* Trip page (sandy beige) */
+
+body.trip-page {
+    background-color: #f4ead6;
+    background-image:
+        radial-gradient(circle at 8% 6%, rgba(233, 213, 175, 0.7), transparent 44%),
+        radial-gradient(circle at 90% 14%, rgba(255, 251, 242, 0.8), transparent 42%),
+        radial-gradient(circle at 74% 92%, rgba(214, 232, 240, 0.55), transparent 45%),
+        linear-gradient(165deg, #f7efdd 0%, #f2e7d0 45%, #e9f0f4 100%);
+    background-attachment: fixed;
+    color: rgb(1, 35, 63);
+}
+
+body.trip-page .trip-details {
+    background: transparent;
+    min-height: auto;
+    padding: 40px 6% 60px;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+body.trip-page .trip-info {
+    width: min(1200px, 100%);
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(93, 74, 45, 0.12);
+    padding: 30px 32px 36px;
+}
+
+body.trip-page .trip-info > h1 {
+    font-size: 38px;
+    color: rgb(1, 35, 63);
+    margin-bottom: 10px;
+}
+
+body.trip-page .trip-info > p {
+    color: #6b7c86;
+    font-size: 17px;
+    margin-bottom: 26px;
+}
+
+body.trip-page .trip-data {
+    color: #4a5b66;
+}
+
+body.trip-page .trip-data strong {
+    color: rgb(1, 35, 63);
+}
+
+body.trip-page #booking-form {
+    margin-top: 28px;
+    background-color: #f7f9fa;
+    border: 1px solid #e6ebee;
+    border-radius: 14px;
+    padding: 22px 24px 24px;
+}
+
+body.trip-page .boat-option-card {
+    background-color: white;
+    border: 1px solid #e6ebee;
+    box-shadow: 0 4px 14px rgba(93, 74, 45, 0.08);
+}
+
+body.trip-page .boat-option-card.selected {
+    border-color: rgb(8, 126, 164);
+    box-shadow: 0 6px 18px rgba(8, 126, 164, 0.18);
+}
+
+body.trip-page .selected-boat-box {
+    background-color: #eef2f4;
+    color: #33454f;
+    border-radius: 10px;
+}
+
+body.trip-page #total-price {
+    color: rgb(1, 35, 63);
+    font-weight: 700;
+}
+
+body.trip-page .book-btn {
+    background-color: rgb(1, 35, 63);
+    border-radius: 10px;
+    padding: 14px 32px;
+}
+
+body.trip-page .book-btn:hover {
+    background-color: rgb(8, 126, 164);
+}
+
+body.trip-page .addon-item {
+    background-color: white;
+    border: 1px solid #e6ebee;
+    border-radius: 10px;
+}
+
+body.trip-page .trip-gallery-section {
+    padding: 20px 6% 40px;
+}
+
+body.trip-page .trip-gallery-section h2 {
+    color: rgb(1, 35, 63);
+}
+
+body.trip-page .activity-section {
+    background-color: rgba(255, 255, 255, 0.55);
+    border-radius: 18px;
+    margin: 0 6% 30px;
+    padding: 50px 5%;
+}
+
+body.trip-page .activity-section p {
+    color: #4a5b66;
+}
+
+body.trip-page .activity-section h2 {
+    color: rgb(1, 35, 63);
+}
+
+
 .activity-section {
     display: flex;
     align-items: center;
