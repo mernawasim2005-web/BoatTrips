@@ -7,7 +7,7 @@
 
     <title>Our Fleet</title>
 
-    <link rel="stylesheet" href="style.css?v=20">
+    <link rel="stylesheet" href="style.css?v=21">
     <link rel="preload" as="image" href="images/boat1.jpeg" fetchpriority="high">
 </head>
 
@@ -32,17 +32,27 @@
 
 
     <!-- Fleet Intro -->
-<section class="about-intro fleet-intro">
+    <section class="about-intro fleet-intro">
+        <span class="fleet-eyebrow">Our Boats</span>
+
         <h1>Our Fleet</h1>
-    <p>
-        Take a look <br> at the boats that will <br>take you on your next
-        Red Sea adventure. <br>Comfortable, safe, and ready for fun.
-    </p>
-</section>
+
+        <p>
+            Take a look at the boats that will take you on your next Red Sea adventure.
+            Comfortable, safe, and ready for fun.
+        </p>
+    </section>
 
 
     <!-- Boats -->
     <section class="fleet-section">
+
+        <h2 class="fleet-section-title">Choose your boat</h2>
+
+        <p class="fleet-section-subtitle">
+            Every boat is crewed, maintained and ready for the water.
+        </p>
+
         <div id="fleet-container" class="fleet-container" aria-live="polite" aria-busy="true">
             <div class="fleet-card fleet-initial-card">
                 <div class="fleet-image">
@@ -54,7 +64,41 @@
         </div>
     </section>
 
-    <script type="module" src="fleet.js?v=16"></script>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+
+        <div class="site-footer-inner">
+
+            <div>
+                <h3>AQUAVIDA</h3>
+                <p>Boat trips, islands and snorkeling experiences in the Red Sea.</p>
+            </div>
+
+            <div>
+                <h3>Explore</h3>
+                <div class="site-footer-links">
+                    <a href="trips.html">Our Trips</a>
+                    <a href="fleet.html">Our Fleet</a>
+                    <a href="about.html">About Us</a>
+                    <a href="account.html">My Account</a>
+                </div>
+            </div>
+
+            <div>
+                <h3>Contact</h3>
+                <div class="site-footer-links">
+                    <a href="https://wa.me/201223595411" target="_blank" rel="noopener">Technical support: 0122 359 5411</a>
+                </div>
+            </div>
+
+        </div>
+
+        <p class="site-footer-bottom">&copy; AQUAVIDA. All rights reserved.</p>
+
+    </footer>
+
+    <script type="module" src="fleet.js?v=17"></script>
 
 
 

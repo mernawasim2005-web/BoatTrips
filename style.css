@@ -3397,18 +3397,142 @@ background-color: rgb(1, 35, 63);
 
 
 body.fleet-page {
-   background-image: url("images/sunset.jpeg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background-color: #f4ead6;
+    background-image:
+        radial-gradient(circle at 10% 8%, rgba(233, 213, 175, 0.75), transparent 45%),
+        radial-gradient(circle at 88% 12%, rgba(255, 250, 240, 0.85), transparent 42%),
+        radial-gradient(circle at 78% 88%, rgba(214, 232, 240, 0.6), transparent 45%),
+        linear-gradient(165deg, #f7efdd 0%, #f2e7d0 45%, #e9f0f4 100%);
     background-attachment: fixed;
-    color: white;
+    color: rgb(1, 35, 63);
 }
 
-body.fleet-page .about-intro h1,
-body.fleet-page .about-intro p {
-    color: white;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+body.fleet-page .fleet-intro {
+    padding: 90px 8% 30px;
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+body.fleet-page .fleet-intro .fleet-eyebrow {
+    display: inline-block;
+    background-color: rgba(255, 255, 255, 0.75);
+    color: rgb(8, 126, 164);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 7px 16px;
+    border-radius: 999px;
+    margin: 0 0 18px;
+}
+
+body.fleet-page .fleet-intro h1 {
+    font-size: 42px;
+    color: rgb(1, 35, 63);
+    margin: 0 0 16px;
+    text-shadow: none;
+}
+
+body.fleet-page .fleet-intro p {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #6b5b42;
+    margin: 0;
+}
+
+body.fleet-page .fleet-section {
+    padding: 30px 8% 70px;
+}
+
+body.fleet-page .fleet-section-title {
+    text-align: center;
+    font-size: 32px;
+    color: rgb(1, 35, 63);
+    margin: 0 0 8px;
+}
+
+body.fleet-page .fleet-section-subtitle {
+    text-align: center;
+    color: #6b5b42;
+    font-size: 16px;
+    margin: 0 0 34px;
+}
+
+body.fleet-page .fleet-specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 16px 22px 0;
+}
+
+body.fleet-page .fleet-specs span {
+    background-color: #eef2f4;
+    color: #48606d;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 11px;
+    border-radius: 999px;
+}
+
+body.fleet-page .fleet-capacity {
+    margin-top: 14px;
+}
+
+body.fleet-page .fleet-container {
+    gap: 26px;
+}
+
+body.fleet-page .fleet-card {
+    width: 300px;
+    padding: 0 0 26px;
+    background-color: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(93, 74, 45, 0.12);
+    border-top: 3px solid rgb(8, 126, 164);
+    display: flex;
+    flex-direction: column;
+}
+
+body.fleet-page .fleet-card h3 {
+    font-size: 21px;
+    color: rgb(1, 35, 63);
+    margin: 22px 22px 8px;
+}
+
+body.fleet-page .fleet-card p {
+    color: #6b7c86;
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0 22px;
+}
+
+body.fleet-page .fleet-capacity {
+    color: rgb(8, 126, 164) !important;
+    font-weight: 700;
+}
+
+body.fleet-page .fleet-image {
+    height: 200px;
+    background-color: #e6f0f5;
+    border-radius: 0;
+    margin-bottom: 0;
+}
+
+body.fleet-page .fleet-nav {
+    background-color: rgba(1, 35, 63, 0.55);
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
+}
+
+body.fleet-page .fleet-prev {
+    left: 12px;
+}
+
+body.fleet-page .fleet-next {
+    right: 12px;
 }
 
 

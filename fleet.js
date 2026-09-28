@@ -30,17 +30,29 @@ try {
                      data-boat="${boatIndex}" data-index="${i}">
             `).join("");
 
+            const specs = [
+                boat.guests ? `${boat.guests} guests` : "",
+                boat.length ? `${boat.length} m` : "",
+                boat.engine ? `${boat.engine}` : "",
+                boat.year ? `Year ${boat.year}` : ""
+            ].filter(Boolean);
+
+            const specsHTML = specs.length
+                ? `<div class="fleet-specs">${specs.map((spec) => `<span>${spec}</span>`).join("")}</div>`
+                : "";
+
             return `
                 <div class="fleet-card">
                     <div class="fleet-image">
                         ${images.length > 0 ? imagesHTML : `<svg class="fleet-placeholder" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="5" r="3"></circle><path d="M12 22V8"></path><path d="M5 12H2a10 10 0 0 0 20 0h-3"></path></svg>`}
                         ${images.length > 1 ? `
-                            <button class="fleet-nav fleet-prev" data-boat="${boatIndex}">‹</button>
-                            <button class="fleet-nav fleet-next" data-boat="${boatIndex}">›</button>
+                            <button class="fleet-nav fleet-prev" data-boat="${boatIndex}" aria-label="Previous photo">‹</button>
+                            <button class="fleet-nav fleet-next" data-boat="${boatIndex}" aria-label="Next photo">›</button>
                         ` : ""}
                     </div>
                     <h3>${boat.name}</h3>
                     <p>${boat.description || "A great boat for your next adventure."}</p>
+                    ${specsHTML}
                     <p class="fleet-capacity">Up to ${boat.capacity} people</p>
                 </div>
             `;
