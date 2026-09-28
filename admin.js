@@ -1,7 +1,7 @@
 import { onAuthStateChanged, signOut }
     from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
-import { collection, getDocs, getDoc, deleteDoc, doc, addDoc, updateDoc, deleteField }
+import { collection, getDocs, getDoc, deleteDoc, doc, addDoc, setDoc, updateDoc, deleteField }
     from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 import { auth, db } from "./firebase.js";
@@ -672,6 +672,7 @@ function renderBookingsSection() {
             <input type="text" id="booking-search" placeholder="Search by customer name...">
             <input type="date" id="booking-date-filter">
             <button id="clear-filters-btn">Clear Filters</button>
+            <button id="rebuild-availability-btn" title="Publish availability markers for active bookings">Rebuild Availability</button>
         </div>
 
         <section class="admin-booking-calendar">
@@ -704,6 +705,8 @@ function renderBookingsSection() {
         document.getElementById("booking-date-filter").value = "";
         loadBookingsList();
     });
+
+    document.getElementById("rebuild-availability-btn").addEventListener("click", backfillBookedSlots);
 
     document.getElementById("admin-calendar-boat").addEventListener("change", (event) => {
         adminCalendarBoatId = event.target.value;
@@ -1579,9 +1582,79 @@ async function loadBookingsList() {
     }
 }
 
+async function syncBookedSlot(bookingId, { remove = false, ensure = false } = {}) {
+    try {
+        const bookingSnap = await getDoc(doc(db, "bookings", bookingId));
+        if (!bookingSnap.exists()) return;
+
+        const booking = bookingSnap.data();
+        const slotKey = booking.slotKey;
+        if (!slotKey) return;
+
+        const slotRef = doc(db, "bookedSlots", slotKey);
+
+        if (remove) {
+            await deleteDoc(slotRef);
+            return;
+        }
+
+        if (ensure) {
+            await setDoc(slotRef, {
+                tripId: booking.tripId || "",
+                boatId: booking.boatId || "",
+                date: booking.tripDate || booking.scheduleText || "",
+                startTime: booking.startTime || "",
+                endTime: booking.endTime || "",
+                status: booking.status || "pending",
+                bookingId,
+                createdAt: booking.createdAt || new Date().toISOString()
+            }, { merge: true });
+        }
+    } catch (error) {
+        console.warn("Booked slot marker could not be synchronised:", error);
+    }
+}
+
+async function backfillBookedSlots() {
+    const confirmed = confirm("Rebuild the public availability markers for every active booking?");
+    if (!confirmed) return;
+
+    try {
+        const snapshot = await getDocs(collection(db, "bookings"));
+        let written = 0;
+        let skipped = 0;
+
+        for (const bookingDoc of snapshot.docs) {
+            const booking = bookingDoc.data();
+            if (isCancelledBooking(booking) || !booking.slotKey) {
+                skipped++;
+                continue;
+            }
+
+            await setDoc(doc(db, "bookedSlots", booking.slotKey), {
+                tripId: booking.tripId || "",
+                boatId: booking.boatId || "",
+                date: booking.tripDate || booking.scheduleText || "",
+                startTime: booking.startTime || "",
+                endTime: booking.endTime || "",
+                status: booking.status || "pending",
+                bookingId: bookingDoc.id,
+                createdAt: booking.createdAt || new Date().toISOString()
+            }, { merge: true });
+            written++;
+        }
+
+        alert(`Availability rebuilt: ${written} slot(s) published, ${skipped} skipped.`);
+    } catch (error) {
+        console.error("Error rebuilding availability:", error);
+        alert("Could not rebuild availability.");
+    }
+}
+
 async function updateBookingStatus(bookingId, newStatus) {
     try {
         await updateDoc(doc(db, "bookings", bookingId), { status: newStatus });
+        await syncBookedSlot(bookingId, { remove: newStatus === "cancelled" });
         loadBookingsList();
         loadBookingCalendar();
     } catch (error) {
@@ -1637,11 +1710,12 @@ async function deleteBooking(bookingId) {
 
     try {
         await deleteDoc(doc(db, "bookings", bookingId));
+        await syncBookedSlot(bookingId, { remove: true });
         loadBookingsList();
         loadBookingCalendar();
     } catch (error) {
         console.error("Error deleting booking:", error);
-        alert("Could not delete this booking. Please try again.");
+        alert("Failed to delete booking. Please try again.");
     }
 }
 

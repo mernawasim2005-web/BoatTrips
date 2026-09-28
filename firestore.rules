@@ -1,0 +1,70 @@
+rules_version = '2';
+
+// Paste this into Firebase Console > Firestore Database > Rules
+// and press "Publish".
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner() {
+      return request.auth != null
+        && request.auth.token.email == "boattrips.admin@gmail.com";
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Public catalogue: trips and boats are shown to every visitor.
+    match /trips/{tripId} {
+      allow read: if true;
+      allow write: if isOwner();
+    }
+
+    match /boats/{boatId} {
+      allow read: if true;
+      allow write: if isOwner();
+    }
+
+    // Bookings: guests may create a booking, customers may read only their own,
+    // and only the owner may change or delete them.
+    match /bookings/{bookingId} {
+      allow create: if true;
+      allow read: if isOwner()
+        || (isSignedIn() && resource.data.customerUid == request.auth.uid);
+      allow update, delete: if isOwner();
+    }
+
+    // Public availability markers: contain no customer data, only the slot keys
+    // that the booking calendar needs to mark a date/time as taken.
+    match /bookedSlots/{slotId} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly([
+          'tripId', 'boatId', 'date', 'startTime', 'endTime',
+          'status', 'bookingId', 'createdAt'
+        ]);
+      allow update, delete: if isOwner();
+    }
+
+    match /expenses/{expenseId} {
+      allow read, write: if isOwner();
+    }
+
+    match /operators/{operatorId} {
+      allow read, write: if isOwner();
+    }
+
+    // Customer accounts: a customer sees only their own profile,
+    // the owner sees every customer.
+    match /customers/{customerId} {
+      allow read: if isOwner()
+        || (isSignedIn() && request.auth.uid == customerId);
+      allow create, update: if isSignedIn() && request.auth.uid == customerId;
+      allow delete: if false;
+    }
+
+    match /admins/{adminId} {
+      allow read, write: if false;
+    }
+  }
+}

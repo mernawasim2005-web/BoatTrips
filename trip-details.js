@@ -1,4 +1,4 @@
-import { doc, getDoc, getDocs, addDoc, collection } 
+import { doc, getDoc, getDocs, addDoc, setDoc, collection, query, where }
     from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 import { onAuthStateChanged }
     from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
@@ -139,33 +139,20 @@ if (!tripId) {
             async function getBookedSlotKeys(boatId) {
                 const bookedKeys = new Set();
 
+                // Availability is read from the public "bookedSlots" collection so guests
+                // never need access to other customers' booking documents.
                 let snapshot;
                 try {
-                    snapshot = await getDocs(collection(db, "bookings"));
+                    snapshot = await getDocs(query(collection(db, "bookedSlots"), where("tripId", "==", tripId)));
                 } catch (error) {
-                    console.warn("Bookings are not readable for public visitors; showing scheduled times.", error);
+                    console.warn("Booked slots are not readable; showing scheduled times.", error);
                     return bookedKeys;
                 }
 
-                snapshot.forEach((bookingDoc) => {
-                    const booking = bookingDoc.data();
-                    if (booking.status === "cancelled" || booking.tripId !== tripId) return;
-
-                    if (booking.slotKey) {
-                        bookedKeys.add(booking.slotKey);
-                        return;
-                    }
-
-                    // Supports bookings that were created before slotKey was added.
-                    schedule.forEach((slot) => {
-                        const sameBoat = booking.boatId
-                            ? booking.boatId === boatId
-                            : booking.boatName === selectedBoat?.boatName;
-                        const sameDate = booking.tripDate === slot.date
-                            || booking.scheduleText === slot.date
-                            || booking.scheduleText === `${slot.date} (${slot.startTime} - ${slot.endTime})`;
-                        if (sameBoat && sameDate) bookedKeys.add(getSlotKey(slot, boatId));
-                    });
+                snapshot.forEach((slotDoc) => {
+                    const slot = slotDoc.data();
+                    if (slot.status === "cancelled") return;
+                    bookedKeys.add(slotDoc.id);
                 });
 
                 return bookedKeys;
@@ -669,7 +656,7 @@ if (!tripId) {
                 try {
                     const currentUser = auth.currentUser;
 
-                    await addDoc(collection(db, "bookings"), {
+                    const bookingRef = await addDoc(collection(db, "bookings"), {
                         customerName: customerName,
                         customerEmail: currentUser ? currentUser.email || null : null,
                         customerUid: currentUser ? currentUser.uid : null,
@@ -691,6 +678,22 @@ if (!tripId) {
                         bookingSource: "AQUAVIDA",
                         createdAt: new Date().toISOString()
                     });
+
+                    // Public availability marker so guests can see this slot as taken.
+                    try {
+                        await setDoc(doc(db, "bookedSlots", slotKey), {
+                            tripId: tripId,
+                            boatId: selectedBoatId,
+                            date: selectedSlot.date,
+                            startTime: selectedSlot.startTime,
+                            endTime: selectedSlot.endTime,
+                            status: "pending",
+                            bookingId: bookingRef.id,
+                            createdAt: new Date().toISOString()
+                        });
+                    } catch (slotError) {
+                        console.warn("Booked slot marker could not be saved:", slotError);
+                    }
                 } catch (error) {
                     console.error("Error saving booking:", error);
                     alert("Could not save your booking. Please try again.");

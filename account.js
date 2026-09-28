@@ -150,14 +150,6 @@ async function loadCustomerTrips(user) {
         byUid.forEach((bookingDoc) => {
             bookings.push({ id: bookingDoc.id, ...bookingDoc.data() });
         });
-
-        if (user.email) {
-            const byEmail = await getDocs(query(collection(db, "bookings"), where("customerEmail", "==", user.email)));
-            byEmail.forEach((bookingDoc) => {
-                if (bookings.some((booking) => booking.id === bookingDoc.id)) return;
-                bookings.push({ id: bookingDoc.id, ...bookingDoc.data() });
-            });
-        }
     } catch (error) {
         console.error("Error loading customer trips:", error);
         listEl.textContent = "We could not load your trips right now. Please try again later or contact us.";
