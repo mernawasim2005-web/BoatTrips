@@ -1,7 +1,7 @@
 import { onAuthStateChanged, signOut }
     from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
-import { collection, getDocs, deleteDoc, doc, addDoc, updateDoc, deleteField }
+import { collection, getDocs, getDoc, deleteDoc, doc, addDoc, updateDoc, deleteField }
     from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 import { auth, db } from "./firebase.js";
@@ -9,10 +9,16 @@ import { auth, db } from "./firebase.js";
 const adminContent = document.getElementById("admin-content");
 const logoutBtn = document.getElementById("logout-btn");
 
+// Owner accounts allowed to open this dashboard.
+// Add the owner login email here to lock the dashboard to you only.
+const OWNER_EMAILS = [];
+const ADMIN_ACCESS_LOCKED = OWNER_EMAILS.length > 0;
+
 let editingTripId = null;
 let currentSchedule = [];
 let editingBoatId = null;
 let editingOperatorId = null;
+let allCustomers = [];
 let currentSection = "overview";
 let editingExpenseId = null;
 let editingBookingId = null;
@@ -121,14 +127,53 @@ async function getActiveBookings() {
 
 
 
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        setupNav();
-        showSection("overview");
-    } else {
+onAuthStateChanged(auth, async (user) => {
+    if (!user) {
         window.location.href = "owner-login.html";
+        return;
     }
+
+    if (!(await hasAdminAccess(user))) {
+        try {
+            await signOut(auth);
+        } catch (error) {
+            console.error("Sign out error:", error);
+        }
+        window.location.href = "owner-login.html?denied=1";
+        return;
+    }
+
+    setupNav();
+    showSection("overview");
 });
+
+async function hasAdminAccess(user) {
+    const email = (user.email || "").toLowerCase();
+
+    if (ADMIN_ACCESS_LOCKED) {
+        return OWNER_EMAILS.map((ownerEmail) => ownerEmail.toLowerCase().trim()).includes(email);
+    }
+
+    // Not locked yet: only an "admins" document proves admin access.
+    try {
+        const adminSnap = await getDoc(doc(db, "admins", user.uid));
+        const isAdmin = adminSnap.exists() && adminSnap.data().isAdmin === true;
+        if (!isAdmin) showAdminAccessWarning();
+    } catch (error) {
+        console.warn("Admin access check failed:", error);
+    }
+
+    return true;
+}
+
+function showAdminAccessWarning() {
+    if (ADMIN_ACCESS_LOCKED || document.querySelector(".admin-access-warning")) return;
+
+    const warning = document.createElement("div");
+    warning.className = "admin-access-warning";
+    warning.textContent = "Dashboard is not locked to an owner account yet. Add your login email to OWNER_EMAILS in admin.js.";
+    adminContent.parentElement.insertBefore(warning, adminContent);
+}
 
 logoutBtn.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -158,6 +203,7 @@ function showSection(section) {
     if (section === "trips") renderTripsSection();
     if (section === "boats") renderBoatsSection();
     if (section === "operators") renderOperatorsSection();
+    if (section === "customers") renderCustomersSection();
     if (section === "revenue") renderRevenueSection();
     if (section === "expenses") renderExpensesSection();
 }
@@ -273,7 +319,6 @@ async function renderOverview() {
         <div class="dashboard-titlebar">
             <div>
                 <span>OWNER ANALYTICS</span>
-                <h2>Sales Performance Dashboard</h2>
             </div>
             <small>Live booking data</small>
         </div>
@@ -911,6 +956,160 @@ function renderOperatorsSection() {
     });
 
     loadOperatorsList();
+}
+
+function renderCustomersSection() {
+    adminContent.innerHTML = `
+        <div class="dashboard-titlebar">
+            <div>
+                <span>CUSTOMER ACCOUNTS</span>
+                <h2>Customer Sign-ups &amp; Logins</h2>
+            </div>
+            <small>Registered website accounts</small>
+        </div>
+        <div id="customer-summary-grid" class="overview-grid">Loading...</div>
+        <div class="customer-list-toolbar">
+            <h3>Customer directory</h3>
+            <input type="search" id="customer-search" class="customer-search-input" placeholder="Search name or email">
+        </div>
+        <div id="admin-customers-list">Loading customers...</div>
+    `;
+
+    document.getElementById("customer-search").addEventListener("input", renderCustomersList);
+
+    loadCustomersList();
+}
+
+async function loadCustomersList() {
+    const listContainer = document.getElementById("admin-customers-list");
+    if (!listContainer) return;
+
+    try {
+        const snapshot = await getDocs(collection(db, "customers"));
+        allCustomers = snapshot.docs.map((customerDoc) => ({
+            id: customerDoc.id,
+            ...customerDoc.data()
+        }));
+
+        renderCustomerSummary(allCustomers);
+        renderCustomersList();
+    } catch (error) {
+        console.error("Error loading customers:", error);
+        const summaryGrid = document.getElementById("customer-summary-grid");
+        if (summaryGrid) summaryGrid.innerHTML = "";
+        listContainer.innerHTML = "<p>Failed to load customers. Publish Firestore rules for the customers collection to enable this list.</p>";
+    }
+}
+
+function renderCustomerSummary(customers) {
+    const summaryGrid = document.getElementById("customer-summary-grid");
+    if (!summaryGrid) return;
+
+    const now = Date.now();
+    const day = 24 * 60 * 60 * 1000;
+    let newThisMonth = 0;
+    let loggedInEver = 0;
+    let neverLoggedIn = 0;
+    let activeThisWeek = 0;
+
+    customers.forEach((customer) => {
+        const createdAt = getBookingDate(customer.createdAt);
+        const lastLoginAt = getBookingDate(customer.lastLoginAt);
+        const loginCount = Number(customer.loginCount) || 0;
+
+        if (createdAt && now - createdAt.getTime() <= 30 * day) newThisMonth++;
+        if (loginCount > 0 || lastLoginAt) loggedInEver++;
+        else neverLoggedIn++;
+        if (lastLoginAt && now - lastLoginAt.getTime() <= 7 * day) activeThisWeek++;
+    });
+
+    summaryGrid.innerHTML = `
+        <div class="overview-card">
+            <span class="overview-number">${customers.length}</span>
+            <span class="overview-label">Total Sign-ups</span>
+        </div>
+        <div class="overview-card">
+            <span class="overview-number">${newThisMonth}</span>
+            <span class="overview-label">Signed Up (30 days)</span>
+        </div>
+        <div class="overview-card">
+            <span class="overview-number">${loggedInEver}</span>
+            <span class="overview-label">Logged In At Least Once</span>
+        </div>
+        <div class="overview-card">
+            <span class="overview-number">${activeThisWeek}</span>
+            <span class="overview-label">Logged In (7 days)</span>
+        </div>
+        <div class="overview-card">
+            <span class="overview-number">${neverLoggedIn}</span>
+            <span class="overview-label">Signed Up, Never Logged In</span>
+        </div>
+    `;
+}
+
+function renderCustomersList() {
+    const listContainer = document.getElementById("admin-customers-list");
+    if (!listContainer) return;
+
+    const searchInput = document.getElementById("customer-search");
+    const query = (searchInput ? searchInput.value : "").trim().toLowerCase();
+
+    const customers = allCustomers
+        .filter((customer) => {
+            if (!query) return true;
+            return [customer.displayName, customer.email, customer.phone]
+                .some((field) => String(field || "").toLowerCase().includes(query));
+        })
+        .sort((a, b) => {
+            const aDate = getBookingDate(b.createdAt);
+            const bDate = getBookingDate(a.createdAt);
+            const aTime = aDate ? aDate.getTime() : 0;
+            const bTime = bDate ? bDate.getTime() : 0;
+            return bTime - aTime;
+        });
+
+    if (!customers.length) {
+        listContainer.innerHTML = allCustomers.length
+            ? "<p>No customers match your search.</p>"
+            : "<p>No customer accounts yet. Share the sign-up page to get started.</p>";
+        return;
+    }
+
+    listContainer.innerHTML = customers.map((customer) => {
+        const name = customer.displayName || "Unnamed customer";
+        const loginCount = Number(customer.loginCount) || 0;
+        const hasLoggedIn = loginCount > 0 || Boolean(getBookingDate(customer.lastLoginAt));
+        const statusBadge = hasLoggedIn
+            ? `<span class="customer-badge is-active">Logged in ${loginCount} time${loginCount === 1 ? "" : "s"}</span>`
+            : `<span class="customer-badge is-never">Never logged in</span>`;
+
+        return `
+            <div class="admin-boat-card">
+                <div class="admin-trip-row">
+                    <span><strong>${escapeHtml(name)}</strong></span>
+                    ${statusBadge}
+                </div>
+                <div class="customer-row-meta">
+                    ${customer.email ? `<span>${escapeHtml(customer.email)}</span>` : ""}
+                    ${customer.phone ? `<span>${escapeHtml(customer.phone)}</span>` : ""}
+                    <span>Joined: ${formatAdminDate(customer.createdAt)}</span>
+                    <span>Last login: ${hasLoggedIn ? formatAdminDateTime(customer.lastLoginAt) : "Never"}</span>
+                </div>
+            </div>
+        `;
+    }).join("");
+}
+
+function formatAdminDate(value) {
+    const date = getBookingDate(value);
+    if (!date) return "-";
+    return date.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+function formatAdminDateTime(value) {
+    const date = getBookingDate(value);
+    if (!date) return "-";
+    return `${formatAdminDate(value)}, ${date.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}`;
 }
 
 async function loadOperatorsList() {

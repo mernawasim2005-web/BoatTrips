@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Account</title>
+
+    <link rel="stylesheet" href="style.css?v=19">
+</head>
+
+<body class="account-page">
+
+    <!-- Navigation -->
+    <nav>
+
+        <div class="logo"><img src="AQUAVIDA_WORD.png" alt="AQUAVIDA" class="logo-word"></div>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="trips.html">Trips</a>
+            <a href="about.html">About Us</a>
+            <a href="contact.html">Contact</a>
+            <a href="fleet.html">Our Fleet</a>
+        </div>
+
+        <a href="owner-login.html" class="admin-btn">Owner Login</a>
+
+    </nav>
+
+
+    <!-- Account -->
+    <section class="account-section">
+
+        <div class="account-card">
+
+            <h1>My Account</h1>
+
+            <p class="account-subtitle">
+                Create an account to book faster and keep your details ready for every trip.
+            </p>
+
+            <div class="account-tabs" id="account-tabs">
+                <button type="button" class="account-tab is-active" data-tab="signin">Sign in</button>
+                <button type="button" class="account-tab" data-tab="signup">Create account</button>
+            </div>
+
+            <form class="account-form" id="signin-form">
+
+                <label>
+                    Email
+                    <input type="email" id="signin-email" required autocomplete="email" placeholder="you@example.com">
+                </label>
+
+                <label>
+                    Password
+                    <input type="password" id="signin-password" required autocomplete="current-password" placeholder="Your password">
+                </label>
+
+                <button type="button" class="account-inline-link" id="reset-password-btn">Forgot password?</button>
+
+                <button type="submit" class="account-submit">Sign in</button>
+
+            </form>
+
+            <form class="account-form" id="signup-form" hidden>
+
+                <label>
+                    Full name
+                    <input type="text" id="signup-name" required autocomplete="name" placeholder="e.g. Marco Rossi">
+                </label>
+
+                <label>
+                    Email
+                    <input type="email" id="signup-email" required autocomplete="email" placeholder="you@example.com">
+                </label>
+
+                <label>
+                    Phone number <small class="account-optional">(optional)</small>
+                    <input type="tel" id="signup-phone" autocomplete="tel" placeholder="e.g. 0100 000 0000">
+                </label>
+
+                <label>
+                    Password
+                    <input type="password" id="signup-password" required minlength="6" autocomplete="new-password" placeholder="At least 6 characters">
+                </label>
+
+                <label>
+                    Confirm password
+                    <input type="password" id="signup-confirm" required minlength="6" autocomplete="new-password" placeholder="Repeat your password">
+                </label>
+
+                <button type="submit" class="account-submit">Create account</button>
+
+            </form>
+
+            <div class="account-panel" id="account-panel" hidden>
+
+                <div class="account-avatar" id="account-avatar">A</div>
+
+                <h2 id="account-greeting">Welcome back</h2>
+
+                <p class="account-panel-email" id="account-email"></p>
+
+                <ul class="account-meta-list">
+                    <li><span>Member since</span><strong id="account-member-since">-</strong></li>
+                    <li><span>Times signed in</span><strong id="account-login-count">-</strong></li>
+                    <li><span>Last sign in</span><strong id="account-last-login">-</strong></li>
+                </ul>
+
+                <p class="account-admin-note" id="account-admin-note" hidden>
+                    You are signed in with an admin account.
+                    <a href="admin.html">Open the dashboard</a>
+                </p>
+
+                <p class="account-id-label">Account ID: <span id="account-uid"></span></p>
+
+                <div class="account-panel-actions">
+                    <a href="trips.html" class="account-secondary-btn">Browse trips</a>
+                    <button type="button" class="account-ghost-btn" id="account-signout-btn">Sign out</button>
+                </div>
+
+            </div>
+
+            <p class="account-status" id="account-status"></p>
+
+        </div>
+
+    </section>
+
+
+    <!-- Footer -->
+    <footer class="site-footer">
+
+        <div class="site-footer-inner">
+
+            <div>
+                <h3>AQUAVIDA</h3>
+                <p>Boat trips, islands and snorkeling experiences in the Red Sea.</p>
+            </div>
+
+            <div>
+                <h3>Explore</h3>
+                <div class="site-footer-links">
+                    <a href="trips.html">Our Trips</a>
+                    <a href="fleet.html">Our Fleet</a>
+                    <a href="about.html">About Us</a>
+                    <a href="account.html">My Account</a>
+                </div>
+            </div>
+
+            <div>
+                <h3>Contact</h3>
+                <div class="site-footer-links">
+                    <a href="https://wa.me/201223595411" target="_blank" rel="noopener">Technical support: 0122 359 5411</a>
+                </div>
+            </div>
+
+        </div>
+
+        <p class="site-footer-bottom">&copy; AQUAVIDA. All rights reserved.</p>
+
+    </footer>
+
+<script type="module" src="account.js"></script>
+
+</body>
+
+</html>

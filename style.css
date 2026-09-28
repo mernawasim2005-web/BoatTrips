@@ -1138,6 +1138,347 @@ body.contact-page {
     margin: 0;
 }
 
+.owner-login-note {
+    color: #8a5a0b;
+    background-color: #fdf1e2;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+    margin: 0 0 15px;
+    text-align: left;
+}
+
+
+/* Customer account */
+
+.account-page {
+    background-color: #f4efe3;
+    min-height: 100vh;
+}
+
+.account-section {
+    display: flex;
+    justify-content: center;
+    padding: 50px 6% 70px;
+}
+
+.account-card {
+    width: 100%;
+    max-width: 460px;
+    background-color: white;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    padding: 34px 30px;
+    align-self: flex-start;
+    margin-top: 30px;
+}
+
+.account-card h1 {
+    font-size: 28px;
+    color: rgb(1, 35, 63);
+    margin-bottom: 8px;
+}
+
+.account-subtitle {
+    color: #6b7c86;
+    font-size: 15px;
+    margin-bottom: 22px;
+}
+
+.account-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    background-color: #eef2f4;
+    padding: 6px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+}
+
+.account-tab {
+    border: none;
+    background-color: transparent;
+    padding: 11px 8px;
+    border-radius: 9px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #4a5b66;
+    cursor: pointer;
+}
+
+.account-tab.is-active {
+    background-color: rgb(1, 35, 63);
+    color: white;
+}
+
+.account-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.account-form[hidden],
+.account-panel[hidden],
+.account-tabs[hidden] {
+    display: none;
+}
+
+.account-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #33454f;
+}
+
+.account-optional {
+    font-weight: 400;
+    color: #93a1a9;
+}
+
+.account-form input {
+    padding: 12px;
+    border: 1px solid #d7dee2;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: inherit;
+}
+
+.account-form input:focus {
+    outline: 2px solid rgb(8, 126, 164);
+    border-color: transparent;
+}
+
+.account-submit {
+    margin-top: 6px;
+    background-color: rgb(1, 35, 63);
+    color: white;
+    border: none;
+    padding: 13px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.account-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.account-inline-link {
+    background: none;
+    border: none;
+    padding: 0;
+    color: rgb(8, 126, 164);
+    font-size: 14px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.account-inline-link:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.account-status {
+    min-height: 20px;
+    margin: 16px 0 0;
+    font-size: 14px;
+    color: #b3261e;
+}
+
+.account-status.is-success {
+    color: #1c7a4d;
+}
+
+.account-panel {
+    text-align: center;
+}
+
+.account-avatar {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background-color: rgb(1, 35, 63);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin: 0 auto 14px;
+}
+
+.account-panel h2 {
+    font-size: 22px;
+    color: rgb(1, 35, 63);
+    margin-bottom: 6px;
+}
+
+.account-panel-email {
+    color: #6b7c86;
+    font-size: 14px;
+}
+
+.account-meta-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+}
+
+.account-meta-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    background-color: #f6f8f9;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.account-meta-list span {
+    color: #6b7c86;
+}
+
+.account-admin-note {
+    background-color: #eaf3f7;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 14px;
+    margin-bottom: 0;
+}
+
+.account-admin-note[hidden] {
+    display: none;
+}
+
+.account-id-label {
+    font-size: 12px;
+    color: #93a1a9;
+    word-break: break-all;
+    margin-top: 14px;
+}
+
+.hero-account-link {
+    display: inline-block;
+    margin-top: 18px;
+    color: #f3e5c8;
+    font-size: 15px;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.hero-account-link:hover {
+    color: white;
+}
+
+.trips-account-note {
+    color: #4b5d68;
+    font-size: 15px;
+    margin: 0 0 18px;
+}
+
+.trips-account-note a {
+    color: rgb(8, 126, 164);
+    font-weight: 600;
+}
+
+.account-panel-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.account-secondary-btn {
+    display: block;
+    text-align: center;
+    background-color: rgb(1, 35, 63);
+    color: white;
+    text-decoration: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.account-ghost-btn {
+    background-color: transparent;
+    color: rgb(1, 35, 63);
+    border: 1px solid rgb(1, 35, 63);
+    padding: 11px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+
+/* Customer directory */
+
+.customer-list-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin: 26px 0 14px;
+}
+
+.customer-list-toolbar h3 {
+    color: rgb(1, 35, 63);
+}
+
+.customer-search-input {
+    padding: 10px 14px;
+    border: 1px solid #d7dee2;
+    border-radius: 10px;
+    font-size: 14px;
+    min-width: 230px;
+}
+
+.customer-row-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    color: #5d6f79;
+    font-size: 14px;
+    margin-top: 6px;
+}
+
+.customer-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background-color: #eef2f4;
+    color: #48606d;
+    white-space: nowrap;
+}
+
+.customer-badge.is-active {
+    background-color: #e3f4ec;
+    color: #1c7a4d;
+}
+
+.customer-badge.is-never {
+    background-color: #fdf1e2;
+    color: #a26a12;
+}
+
+.admin-access-warning {
+    background-color: #fdf1e2;
+    color: #8a5a0b;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    margin: 0 0 18px;
+}
+
 
 .book-btn{
 background-color: rgb(1, 35, 63);

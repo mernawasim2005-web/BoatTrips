@@ -5,6 +5,11 @@ import { auth } from "./firebase.js";
 
 const form = document.getElementById("login-form");
 const errorMessage = document.getElementById("login-error");
+const accessNote = document.getElementById("owner-login-note");
+
+if (new URLSearchParams(window.location.search).get("denied") === "1" && accessNote) {
+    accessNote.hidden = false;
+}
 
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
