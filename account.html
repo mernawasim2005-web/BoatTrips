@@ -7,7 +7,7 @@
 
     <title>My Account</title>
 
-    <link rel="stylesheet" href="style.css?v=19">
+    <link rel="stylesheet" href="style.css?v=20">
 </head>
 
 <body class="account-page">
@@ -116,6 +116,11 @@
 
                 <p class="account-id-label">Account ID: <span id="account-uid"></span></p>
 
+                <div class="account-trips" id="account-trips">
+                    <h3>My booked trips</h3>
+                    <div id="account-trips-list">Loading your trips...</div>
+                </div>
+
                 <div class="account-panel-actions">
                     <a href="trips.html" class="account-secondary-btn">Browse trips</a>
                     <button type="button" class="account-ghost-btn" id="account-signout-btn">Sign out</button>
@@ -163,7 +168,7 @@
 
     </footer>
 
-<script type="module" src="account.js"></script>
+<script type="module" src="account.js?v=1"></script>
 
 </body>
 

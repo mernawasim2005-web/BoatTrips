@@ -7,7 +7,7 @@ import {
     sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
-import { doc, getDoc, setDoc, updateDoc, serverTimestamp, increment }
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp, increment, collection, getDocs, query, where }
     from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 import { auth, db } from "./firebase.js";
@@ -103,6 +103,128 @@ function renderSignedIn(user, profile) {
     document.getElementById("account-uid").textContent = user.uid;
 
     showPanel("account");
+    loadCustomerTrips(user);
+}
+
+const BOOKING_STATUS_LABELS = {
+    pending: "Pending",
+    confirmed: "Confirmed",
+    cancelled: "Cancelled",
+    canceled: "Cancelled",
+    completed: "Completed"
+};
+
+function escapeText(value) {
+    return String(value === undefined || value === null ? "" : value).replace(/[&<>"']/g, (character) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;"
+    }[character]));
+}
+
+function bookingDateValue(booking) {
+    const raw = booking.tripDate || booking.scheduleText;
+    if (!raw) return null;
+    const date = new Date(String(raw).slice(0, 10));
+    return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function bookingTimeText(booking) {
+    if (booking.startTime && booking.endTime) return `${booking.startTime} - ${booking.endTime}`;
+    if (booking.startTime) return booking.startTime;
+    return "Time to be confirmed";
+}
+
+async function loadCustomerTrips(user) {
+    const listEl = document.getElementById("account-trips-list");
+    if (!listEl) return;
+
+    listEl.textContent = "Loading your trips...";
+
+    const bookings = [];
+
+    try {
+        const byUid = await getDocs(query(collection(db, "bookings"), where("customerUid", "==", user.uid)));
+        byUid.forEach((bookingDoc) => {
+            bookings.push({ id: bookingDoc.id, ...bookingDoc.data() });
+        });
+
+        if (user.email) {
+            const byEmail = await getDocs(query(collection(db, "bookings"), where("customerEmail", "==", user.email)));
+            byEmail.forEach((bookingDoc) => {
+                if (bookings.some((booking) => booking.id === bookingDoc.id)) return;
+                bookings.push({ id: bookingDoc.id, ...bookingDoc.data() });
+            });
+        }
+    } catch (error) {
+        console.error("Error loading customer trips:", error);
+        listEl.textContent = "We could not load your trips right now. Please try again later or contact us.";
+        return;
+    }
+
+    if (!bookings.length) {
+        listEl.innerHTML = `<p class="account-trips-empty">No bookings yet. <a href="trips.html">Find your trip</a> and it will show up here.</p>`;
+        return;
+    }
+
+    const now = new Date();
+    const sorted = [...bookings].sort((a, b) => {
+        const aDate = bookingDateValue(a);
+        const bDate = bookingDateValue(b);
+        const aTime = aDate ? aDate.getTime() : 0;
+        const bTime = bDate ? bDate.getTime() : 0;
+        const aFuture = aTime >= now.getTime() ? 1 : 0;
+        const bFuture = bTime >= now.getTime() ? 1 : 0;
+        if (aFuture !== bFuture) return bFuture - aFuture;
+        return bFuture ? aTime - bTime : bTime - aTime;
+    });
+
+    const upcoming = sorted.filter((booking) => {
+        const date = bookingDateValue(booking);
+        return date && date.getTime() >= now.getTime();
+    });
+    const past = sorted.filter((booking) => !upcoming.includes(booking));
+
+    listEl.innerHTML = [
+        upcoming.length ? renderTripGroup("Upcoming trips", upcoming) : "",
+        past.length ? renderTripGroup("Past trips", past) : ""
+    ].join("");
+
+    function renderTripGroup(heading, groupBookings) {
+        return `
+            <h4 class="account-trips-group">${heading}</h4>
+            ${groupBookings.map((booking) => {
+                const status = String(booking.status || "pending").toLowerCase();
+                const statusLabel = BOOKING_STATUS_LABELS[status] || "Pending";
+                const peopleCount = Number(booking.peopleCount) || 1;
+                const total = Number(booking.totalPrice) || 0;
+                const date = bookingDateValue(booking);
+                const dateLabel = date ? date.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "Date to be confirmed";
+                const addons = Array.isArray(booking.addons) && booking.addons.length
+                    ? booking.addons.map((addon) => escapeText(addon.name)).join(", ")
+                    : "";
+
+                return `
+                    <div class="account-trip-card">
+                        <div class="account-trip-head">
+                            <strong>${escapeText(booking.tripName || "Boat trip")}</strong>
+                            <span class="account-trip-status is-${escapeText(status)}">${escapeText(statusLabel)}</span>
+                        </div>
+                        <div class="account-trip-meta">
+                            <span>${escapeText(dateLabel)} &middot; ${escapeText(bookingTimeText(booking))}</span>
+                            <span>${escapeText(booking.boatName || "Boat to be confirmed")}</span>
+                            <span>${peopleCount} guest${peopleCount === 1 ? "" : "s"}</span>
+                            <span>${total.toLocaleString()} EGP</span>
+                        </div>
+                        ${addons ? `<div class="account-trip-addons">Add-ons: ${addons}</div>` : ""}
+                        <a class="account-trip-link" href="trips-details.html?id=${encodeURIComponent(booking.tripId || "")}">View trip</a>
+                    </div>
+                `;
+            }).join("")}
+        `;
+    }
 }
 
 async function loadProfile(uid) {

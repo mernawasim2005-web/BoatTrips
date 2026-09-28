@@ -1416,6 +1416,113 @@ body.contact-page {
     font-size: 15px;
 }
 
+.account-trips {
+    margin-top: 26px;
+    padding-top: 22px;
+    border-top: 1px solid #e6ebee;
+    text-align: left;
+}
+
+.account-trips h3 {
+    color: rgb(1, 35, 63);
+    font-size: 18px;
+    margin-bottom: 14px;
+}
+
+.account-trips-group {
+    color: #6b7c86;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 16px 0 10px;
+}
+
+.account-trips-empty {
+    color: #6b7c86;
+    font-size: 14px;
+}
+
+.account-trips-empty a {
+    color: rgb(8, 126, 164);
+    font-weight: 600;
+}
+
+.account-trip-card {
+    background-color: #f7f9fa;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+}
+
+.account-trip-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    color: rgb(1, 35, 63);
+}
+
+.account-trip-status {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background-color: #eef2f4;
+    color: #48606d;
+    white-space: nowrap;
+}
+
+.account-trip-status.is-confirmed,
+.account-trip-status.is-completed {
+    background-color: #e3f4ec;
+    color: #1c7a4d;
+}
+
+.account-trip-status.is-pending {
+    background-color: #fdf1e2;
+    color: #a26a12;
+}
+
+.account-trip-status.is-cancelled,
+.account-trip-status.is-canceled {
+    background-color: #fbe6e4;
+    color: #b3261e;
+}
+
+.account-trip-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: #5d6f79;
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+.account-trip-addons {
+    color: #7b8b94;
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+.account-trip-link {
+    display: inline-block;
+    margin-top: 10px;
+    color: rgb(8, 126, 164);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.booking-account-hint {
+    color: #5d6f79;
+    font-size: 14px;
+    margin: 0;
+}
+
+.booking-account-hint a {
+    color: rgb(8, 126, 164);
+    font-weight: 600;
+}
+
 
 /* Customer directory */
 

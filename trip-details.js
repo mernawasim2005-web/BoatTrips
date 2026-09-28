@@ -1,6 +1,8 @@
 import { doc, getDoc, getDocs, addDoc, collection } 
     from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-import { db } from "./firebase.js";
+import { onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import { db, auth } from "./firebase.js";
 
 const params = new URLSearchParams(window.location.search);
 const tripId = params.get("id");
@@ -297,6 +299,8 @@ if (!tripId) {
                         <input type="text" id="customer-name" placeholder="Enter your full name" required>
                     </label>
 
+                    <p class="booking-account-hint" id="booking-account-hint"></p>
+
                     <div id="schedule-select-container">
                         <div class="customer-calendar customer-calendar-placeholder">
                             <strong>Choose Trip Date</strong>
@@ -324,7 +328,9 @@ if (!tripId) {
             `;
 
 
-                        // Boat card image slideshow navigation
+            updateBookingAccountHint();
+
+            // Boat card image slideshow navigation
             document.querySelectorAll(".boat-slide-nav").forEach((btn) => {
                 btn.addEventListener("click", (e) => {
                     e.stopPropagation(); // prevent selecting the boat when clicking arrows
@@ -670,8 +676,12 @@ if (!tripId) {
                 captainName = selectedSlot.captainName || "Not assigned";
 
                 try {
+                    const currentUser = auth.currentUser;
+
                     await addDoc(collection(db, "bookings"), {
                         customerName: customerName,
+                        customerEmail: currentUser ? currentUser.email || null : null,
+                        customerUid: currentUser ? currentUser.uid : null,
                         tripId: tripId,
                         tripName: trip.name,
                         boatId: selectedBoatId,
@@ -726,5 +736,37 @@ if (!tripId) {
         tripInfo.innerHTML = "<p>Failed to load trip details.</p>";
     }
 }
+
+function updateBookingAccountHint() {
+    const hint = document.getElementById("booking-account-hint");
+    const nameInput = document.getElementById("customer-name");
+    if (!hint) return;
+
+    const user = auth.currentUser;
+
+    if (user) {
+        if (nameInput && !nameInput.value.trim() && user.displayName) {
+            nameInput.value = user.displayName;
+        }
+        hint.innerHTML = `Signed in as ${escapeHintText(user.email || "")} &middot; this trip will appear in <a href="account.html">My Account</a>.`;
+        return;
+    }
+
+    hint.innerHTML = `<a href="account.html">Sign in or create an account</a> to keep this trip in My Account.`;
+}
+
+function escapeHintText(value) {
+    return String(value).replace(/[&<>"']/g, (character) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#39;"
+    }[character]));
+}
+
+onAuthStateChanged(auth, () => {
+    updateBookingAccountHint();
+});
 
 
