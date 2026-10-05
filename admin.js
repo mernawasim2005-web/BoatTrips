@@ -1,5 +1,7 @@
 import { onAuthStateChanged, signOut }
-    from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+import { responsiveAttrs } from "./js/img-srcset.js?v=1";
 
 import { collection, getDocs, getDoc, deleteDoc, doc, addDoc, setDoc, updateDoc, deleteField }
     from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
@@ -33,20 +35,20 @@ let adminCalendarBoatId = "";
 let adminCalendarBookings = [];
 let adminCalendarSlots = [];
 
-const defaultOperatorDetails = `🛟 August list 🛟
-▪️ Island+diving
+const defaultOperatorDetails = `ðŸ›Ÿ August list ðŸ›Ÿ
+â–ªï¸ Island+diving
 1300 l.e
-▪️ 2in1 Hula orange 1400 l.e
-▪️ 3in1 Hula orange diving 1700 l.e
-▪️ Magawesh island 950 l.e
-▪️ orange island 1000 l.e
-▪️ Hula hula island 950 l.e
-▪️ intro diving 1000 l.e
-▪️ professional diving 1300 l.e without equipment
-▪️Equipment 500 l.e
-▪️ dolphin house 800 l.e
-▪️ transfer makady sahl hashesh 200 l.e per pax
-▪️ safaga elgona 300 l.e`;
+â–ªï¸ 2in1 Hula orange 1400 l.e
+â–ªï¸ 3in1 Hula orange diving 1700 l.e
+â–ªï¸ Magawesh island 950 l.e
+â–ªï¸ orange island 1000 l.e
+â–ªï¸ Hula hula island 950 l.e
+â–ªï¸ intro diving 1000 l.e
+â–ªï¸ professional diving 1300 l.e without equipment
+â–ªï¸Equipment 500 l.e
+â–ªï¸ dolphin house 800 l.e
+â–ªï¸ transfer makady sahl hashesh 200 l.e per pax
+â–ªï¸ safaga elgona 300 l.e`;
 
 function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>"']/g, (character) => ({
@@ -290,10 +292,10 @@ async function checkScheduleConflicts(excludeTripId = null) {
                 if (a.date !== b.date) continue;
 
                 if (a.boatName && a.boatName !== "Not assigned" && a.boatName === b.boatName) {
-                    conflicts.push(`🛥️ Boat "${a.boatName}" is scheduled more than once on ${a.date}`);
+                    conflicts.push(`ðŸ›¥ï¸ Boat "${a.boatName}" is scheduled more than once on ${a.date}`);
                 }
                 if (a.captainName && a.captainName !== "Not assigned" && a.captainName === b.captainName) {
-                    conflicts.push(`👨‍✈️ Captain "${a.captainName}" is scheduled more than once on ${a.date}`);
+                    conflicts.push(`ðŸ‘¨â€âœˆï¸ Captain "${a.captainName}" is scheduled more than once on ${a.date}`);
                 }
             }
         }
@@ -400,9 +402,9 @@ async function renderOverview() {
         const upcoming = await getUpcomingSchedule(5);
         const upcomingHTML = upcoming.length > 0 ? upcoming.map((slot) => `
             <div class="revenue-breakdown-row">
-                <span><strong>${slot.tripName}</strong> — ${slot.date}</span>
-                <span>🛥️ ${slot.boatName} | 👨‍✈️ ${slot.captainName}</span>
-                <span>👥 ${slot.booked}/${slot.capacity} booked</span>
+                <span><strong>${slot.tripName}</strong> â€” ${slot.date}</span>
+                <span>ðŸ›¥ï¸ ${slot.boatName} | ðŸ‘¨â€âœˆï¸ ${slot.captainName}</span>
+                <span>ðŸ‘¥ ${slot.booked}/${slot.capacity} booked</span>
             </div>
         `).join("") : "<p>No upcoming trips scheduled.</p>";
 
@@ -528,8 +530,8 @@ async function renderOverview() {
             .slice(0, 5);
         document.getElementById("recent-activity-list").innerHTML = recentActivity.length ? recentActivity.map((booking) => `
             <div class="recent-activity-row">
-                <span class="recent-activity-icon ${booking.status}">${booking.status === "confirmed" ? "✓" : "•"}</span>
-                <div><strong>${booking.customerName}</strong><small>${booking.status} booking${booking.createdAt ? ` · ${booking.createdAt.toLocaleDateString()}` : ""}</small></div>
+                <span class="recent-activity-icon ${booking.status}">${booking.status === "confirmed" ? "âœ“" : "â€¢"}</span>
+                <div><strong>${booking.customerName}</strong><small>${booking.status} booking${booking.createdAt ? ` Â· ${booking.createdAt.toLocaleDateString()}` : ""}</small></div>
                 <b>${booking.totalPrice.toLocaleString()} EGP</b>
             </div>
         `).join("") : "<p>No booking activity yet.</p>";
@@ -685,9 +687,9 @@ function renderBookingsSection() {
                 </label>
             </div>
             <div class="admin-calendar-month-controls">
-                <button type="button" id="admin-calendar-previous" aria-label="Previous month">‹</button>
+                <button type="button" id="admin-calendar-previous" aria-label="Previous month">â€¹</button>
                 <strong id="admin-calendar-month-label"></strong>
-                <button type="button" id="admin-calendar-next" aria-label="Next month">›</button>
+                <button type="button" id="admin-calendar-next" aria-label="Next month">â€º</button>
             </div>
             <div class="admin-calendar-weekdays" aria-hidden="true">
                 <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
@@ -1142,11 +1144,11 @@ async function loadOperatorsList() {
                 on_leave: "On leave",
                 inactive: "Inactive"
             }[getOperatorStatus(operator.status)];
-            const contact = [operator.email, operator.notes].filter(Boolean).map(escapeHtml).join(" — ");
+            const contact = [operator.email, operator.notes].filter(Boolean).map(escapeHtml).join(" â€” ");
             return `
                 <div class="admin-boat-card">
                     <div class="admin-trip-row">
-                        <span><strong>${escapeHtml(operator.name)}</strong> — ${statusLabel}${operator.phone ? ` — ${escapeHtml(operator.phone)}` : ""}</span>
+                        <span><strong>${escapeHtml(operator.name)}</strong> â€” ${statusLabel}${operator.phone ? ` â€” ${escapeHtml(operator.phone)}` : ""}</span>
                         <div>
                             <button class="edit-operator-btn" data-id="${escapeHtml(operator.id)}">Edit</button>
                             <button class="delete-operator-btn" data-id="${escapeHtml(operator.id)}">Delete</button>
@@ -1235,7 +1237,7 @@ function renderOperatorProfileAnalytics(operators) {
         const percent = total ? Math.round(row.count / total * 100) : 0;
         return `
             <div class="status-chart-row">
-                <div class="status-chart-meta"><span>${row.label}</span><strong>${row.count}/${total} · ${percent}%</strong></div>
+                <div class="status-chart-meta"><span>${row.label}</span><strong>${row.count}/${total} Â· ${percent}%</strong></div>
                 <div class="status-chart-track"><span class="status-chart-bar ${row.className}" style="width:${percent}%"></span></div>
             </div>
         `;
@@ -1507,13 +1509,13 @@ async function loadBookingsList() {
                 <span class="status-badge status-${status}">${status}</span>
             </div>
         </div>
-        <p>👤 ${escapeHtml(booking.customerName || "N/A")}</p>
-        <p>🛥️ ${escapeHtml(booking.boatName || "Not assigned")}</p>
-        <p>👨‍✈️ ${escapeHtml(booking.captainName || "Not assigned")}</p>
-        <p>📅 ${escapeHtml(booking.scheduleText || "Not specified")}</p>
-        <p>👥 ${peopleCount} people</p>
-        ${addons ? `<p>➕ ${addons}</p>` : ""}
-        <p>💰 Revenue: ${totalPrice.toLocaleString()} EGP</p>
+        <p>ðŸ‘¤ ${escapeHtml(booking.customerName || "N/A")}</p>
+        <p>ðŸ›¥ï¸ ${escapeHtml(booking.boatName || "Not assigned")}</p>
+        <p>ðŸ‘¨â€âœˆï¸ ${escapeHtml(booking.captainName || "Not assigned")}</p>
+        <p>ðŸ“… ${escapeHtml(booking.scheduleText || "Not specified")}</p>
+        <p>ðŸ‘¥ ${peopleCount} people</p>
+        ${addons ? `<p>âž• ${addons}</p>` : ""}
+        <p>ðŸ’° Revenue: ${totalPrice.toLocaleString()} EGP</p>
         <p class="booking-date">Booked on: ${date}</p>
 
         <div class="booking-source-row">
@@ -1877,7 +1879,7 @@ async function showTripDetails(tripId) {
             const width = (booked / maxScheduledGuests) * 100;
             return `
                 <div class="status-chart-row">
-                    <div class="status-chart-meta"><span>${slot.date} · ${slot.boatName || "Boat not assigned"}</span><strong>${booked} guests</strong></div>
+                    <div class="status-chart-meta"><span>${slot.date} Â· ${slot.boatName || "Boat not assigned"}</span><strong>${booked} guests</strong></div>
                     <div class="status-chart-track"><span class="status-chart-bar trip-detail-bar" style="width:${width}%"></span></div>
                 </div>
             `;
@@ -2045,11 +2047,11 @@ function renderScheduleList() {
 
     scheduleList.innerHTML = currentSchedule.map((slot, index) => {
     const booked = scheduleOccupancy[index] || 0;
-    const occupancyText = currentTripCapacity ? ` — 👥 ${booked}/${currentTripCapacity} booked` : "";
+    const occupancyText = currentTripCapacity ? ` â€” ðŸ‘¥ ${booked}/${currentTripCapacity} booked` : "";
     return `
         <div class="schedule-slot">
-            <span>📅 ${slot.date} — 🛥️ ${slot.boatName || "Not assigned"} — 👨‍✈️ ${slot.captainName || "Not assigned"}${occupancyText}</span>
-            <button type="button" class="remove-slot-btn" data-index="${index}">✕</button>
+            <span>ðŸ“… ${slot.date} â€” ðŸ›¥ï¸ ${slot.boatName || "Not assigned"} â€” ðŸ‘¨â€âœˆï¸ ${slot.captainName || "Not assigned"}${occupancyText}</span>
+            <button type="button" class="remove-slot-btn" data-index="${index}">âœ•</button>
         </div>
     `;
 }).join("");
@@ -2104,8 +2106,8 @@ function renderAddonsList() {
 
         addonsList.innerHTML = currentAddons.map((addon, index) => `
         <div class="schedule-slot">
-            <span>➕ ${addon.name} — ${addon.price} EGP ${addon.type === "per_person" ? "/ person" : "/ boat"} ${addon.image ? `— 🖼️ ${addon.image}` : ""}</span>
-            <button type="button" class="remove-addon-btn" data-index="${index}">✕</button>
+            <span>âž• ${addon.name} â€” ${addon.price} EGP ${addon.type === "per_person" ? "/ person" : "/ boat"} ${addon.image ? `â€” ðŸ–¼ï¸ ${addon.image}` : ""}</span>
+            <button type="button" class="remove-addon-btn" data-index="${index}">âœ•</button>
         </div>
     `).join("");
 
@@ -2151,8 +2153,8 @@ function renderBoatOptionsList() {
 
     list.innerHTML = currentBoatOptions.map((opt, index) => `
         <div class="schedule-slot">
-            <span>🛥️ ${opt.boatName} — ${opt.price} EGP / person — 👥 up to ${opt.capacity}</span>
-            <button type="button" class="remove-boatoption-btn" data-index="${index}">✕</button>
+            <span>ðŸ›¥ï¸ ${opt.boatName} â€” ${opt.price} EGP / person â€” ðŸ‘¥ up to ${opt.capacity}</span>
+            <button type="button" class="remove-boatoption-btn" data-index="${index}">âœ•</button>
         </div>
     `).join("");
 
@@ -2234,8 +2236,8 @@ function renderTripGalleryList() {
 
     list.innerHTML = currentTripGallery.map((item, index) => `
         <div class="schedule-slot">
-            <span>🖼️ ${item.image || "No image"} ${item.caption ? `— ${item.caption}` : ""}</span>
-            <button type="button" class="remove-gallery-image-btn" data-index="${index}">✕</button>
+            <span>ðŸ–¼ï¸ ${item.image || "No image"} ${item.caption ? `â€” ${item.caption}` : ""}</span>
+            <button type="button" class="remove-gallery-image-btn" data-index="${index}">âœ•</button>
         </div>
     `).join("");
 
@@ -2281,7 +2283,7 @@ function showConflictWarning(conflicts) {
         warningBox.className = "";
     } else {
         warningBox.className = "conflict-warning-box";
-        warningBox.innerHTML = conflicts.map((c) => `<p>⚠️ ${c}</p>`).join("");
+        warningBox.innerHTML = conflicts.map((c) => `<p>âš ï¸ ${c}</p>`).join("");
     }
 }
 
@@ -2447,9 +2449,9 @@ async function loadBoatsList() {
         snapshot.forEach((docSnap) => {
             const boat = docSnap.data();
             const statusLabel = {
-                active: "🟢 Active",
-                maintenance: "🟡 Maintenance",
-                out_of_service: "🔴 Out of Service"
+                active: "ðŸŸ¢ Active",
+                maintenance: "ðŸŸ¡ Maintenance",
+                out_of_service: "ðŸ”´ Out of Service"
             }[boat.status] || boat.status;
 
             const images = boat.images && boat.images.length > 0 
@@ -2457,14 +2459,14 @@ async function loadBoatsList() {
                 : (boat.image ? [boat.image] : []);
 
             const thumbnailsHTML = images.map((img) => `
-                <img src="${img}" alt="${boat.name}" class="admin-boat-thumb" loading="lazy" decoding="async">
+                <img src="${img}" alt="${boat.name}" class="admin-boat-thumb" loading="lazy" decoding="async"${responsiveAttrs(img, "70px")}>
             `).join("");
 
             html += `
                 <div class="admin-boat-card">
                     ${images.length > 0 ? `<div class="admin-boat-thumbs">${thumbnailsHTML}</div>` : ""}
                     <div class="admin-trip-row">
-                        <span><strong>${boat.name}</strong> — ${boat.capacity} people — ${statusLabel}</span>
+                        <span><strong>${boat.name}</strong> â€” ${boat.capacity} people â€” ${statusLabel}</span>
                         <div>
                             <button class="details-boat-btn" data-id="${docSnap.id}">Details</button>
                             <button class="edit-boat-btn" data-id="${docSnap.id}">Edit</button>
@@ -2528,7 +2530,7 @@ async function showBoatDetails(boatId) {
         }[boat.status] || boat.status || "Not set";
         const galleryHTML = images.length ? images.map((image, index) => `
             <button type="button" class="boat-detail-photo-button" data-src="${image}" data-alt="${boat.name} photo ${index + 1}">
-                <img src="${image}" alt="${boat.name} photo ${index + 1}" class="boat-detail-photo" loading="lazy" decoding="async">
+                <img src="${image}" alt="${boat.name} photo ${index + 1}" class="boat-detail-photo" loading="lazy" decoding="async"${responsiveAttrs(image, "(max-width: 900px) 100vw, 300px")}>
             </button>
         `).join("") : "<p>No photos have been added to this boat.</p>";
         const demandHTML = tripDemand.length ? tripDemand.map(([tripName, guests]) => `
@@ -2687,8 +2689,8 @@ function renderBoatImagesList() {
 
     list.innerHTML = currentBoatImages.map((imgPath, index) => `
         <div class="schedule-slot">
-            <span>🖼️ ${imgPath}</span>
-            <button type="button" class="remove-boat-image-btn" data-index="${index}">✕</button>
+            <span>ðŸ–¼ï¸ ${imgPath}</span>
+            <button type="button" class="remove-boat-image-btn" data-index="${index}">âœ•</button>
         </div>
     `).join("");
 
@@ -3003,7 +3005,7 @@ async function loadExpensesList() {
 
             html += `
                 <div class="admin-trip-row">
-                    <span><strong>${exp.category}</strong> — ${exp.amount.toLocaleString()} EGP ${exp.notes ? `— ${exp.notes}` : ""}</span>
+                    <span><strong>${exp.category}</strong> â€” ${exp.amount.toLocaleString()} EGP ${exp.notes ? `â€” ${exp.notes}` : ""}</span>
                     <div>
                         <button class="edit-expense-btn" data-id="${exp.id}">Edit</button>
                         <button class="delete-expense-btn" data-id="${exp.id}">Delete</button>
@@ -3071,7 +3073,7 @@ async function loadNetProfit() {
         const netProfit = tripRevenue - tripCost - totalExpenses;
 
         container.innerHTML = `
-            <h4>Net Profit — ${selectedMonth}</h4>
+            <h4>Net Profit â€” ${selectedMonth}</h4>
             <div class="revenue-breakdown-row">
                 <span>Trip Revenue</span>
                 <span>${tripRevenue.toLocaleString()} EGP</span>

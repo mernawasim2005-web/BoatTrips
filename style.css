@@ -10,6 +10,37 @@ body {
     color: rgb(4, 45, 86);
 }
 
+/* ---- Mobile / tablet behaviour ---- */
+
+/* iOS Safari inflates text in landscape unless told not to. */
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+/* The default tap flash is a grey box on iOS and a blue box on Android;
+   it reads as a glitch next to the navy/gold palette. */
+a,
+button,
+input,
+textarea,
+select,
+summary,
+label[for] {
+    -webkit-tap-highlight-color: rgba(4, 45, 86, 0.12);
+}
+
+/* manipulation keeps pinch-zoom but drops the legacy 300ms double-tap
+   wait, so tapping a card feels immediate on touch devices. */
+a,
+button,
+input,
+textarea,
+select,
+[role="button"] {
+    touch-action: manipulation;
+}
+
 
 
 
@@ -39,9 +70,9 @@ button:hover,
 
 nav {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    right: 20px;
+    top: calc(20px + env(safe-area-inset-top));
+    left: calc(20px + env(safe-area-inset-left));
+    right: calc(20px + env(safe-area-inset-right));
     z-index: 2;
     height: 70px;
     display: flex;
@@ -343,6 +374,10 @@ body.home-page .logo-word {
 
 .trip-card button {
     padding: 10px 20px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border: none;
     border-radius: 7px;
     background-color: #087ea4;
@@ -351,9 +386,12 @@ body.home-page .logo-word {
 }
 
 .view-btn {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     align-self: center;
     padding: 10px 20px;
+    min-height: 44px;
     border: none;
     border-radius: 7px;
     background-color:  rgb(1, 35, 63);
@@ -361,7 +399,6 @@ body.home-page .logo-word {
     text-decoration: none;
     cursor: pointer;
     margin-top: auto;
-
 }
 
 /* Trip Details */
@@ -1154,6 +1191,7 @@ body.contact-page {
 .account-page {
     background-color: #f4efe3;
     min-height: 100vh;
+    min-height: 100svh;
 }
 
 .account-section {
@@ -1778,6 +1816,7 @@ background-color: rgb(1, 35, 63);
 .boat-photo-viewer img {
     max-width: min(1100px, 95vw);
     max-height: 85vh;
+    max-height: 85svh;
     object-fit: contain;
     border-radius: 8px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
@@ -1951,6 +1990,7 @@ background-color: rgb(1, 35, 63);
 .admin-layout {
     display: flex;
     min-height: 100vh;
+    min-height: 100svh;
 }
 
 .admin-sidebar {
@@ -3907,7 +3947,7 @@ body.trip-page .activity-section h2 {
 /* Bigger boat cards with slideshow */
 .boat-option-card {
     display: none;
-    width: min(600px, calc(100vw - 130px));
+    width: min(600px, calc(100% - 130px));
     padding: 16px;
 }
 
@@ -3989,9 +4029,9 @@ body.trip-page .activity-section h2 {
 }
 
 .boat-carousel-nav {
-    flex: 0 0 42px;
-    width: 42px;
-    height: 42px;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
     border: 0;
     border-radius: 50%;
     background: #087ea4;
@@ -4013,7 +4053,7 @@ body.trip-page .activity-section h2 {
 
 @media (max-width: 520px) {
     .boat-carousel { gap: 8px; }
-    .boat-carousel-nav { flex-basis: 34px; width: 34px; height: 34px; }
+    .boat-carousel-nav { flex-basis: 44px; width: 44px; height: 44px; }
     .boat-option-image { height: 330px; }
 }
 
@@ -4110,14 +4150,14 @@ body.trip-page .activity-section h2 {
     .hero,
     .trips {
         width: 100%;
-        max-width: 100vw;
+        max-width: 100%;
     }
 
     nav {
         position: absolute;
-        top: 10px;
-        left: 10px;
-        right: 10px;
+        top: calc(10px + env(safe-area-inset-top));
+        left: calc(10px + env(safe-area-inset-left));
+        right: calc(10px + env(safe-area-inset-right));
         width: auto;
         height: auto;
         min-height: 58px;
@@ -4142,11 +4182,18 @@ body.trip-page .activity-section h2 {
 
     .nav-links a {
         font-size: 15px;
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        padding: 0 6px;
     }
 
     .admin-btn {
         padding: 8px 12px;
         font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
     }
 
     .hero {
@@ -4310,7 +4357,8 @@ body.trip-page .activity-section h2 {
 
     .login-section {
         min-height: 100vh;
-        padding: 120px 18px 40px;
+        min-height: 100svh;
+        padding: calc(120px + env(safe-area-inset-top)) 18px calc(40px + env(safe-area-inset-bottom));
     }
 
     .login-box {
@@ -4354,6 +4402,9 @@ body.trip-page .activity-section h2 {
         padding: 11px 14px;
         font-size: 13px;
         width: auto;
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
     }
 
     .admin-main {

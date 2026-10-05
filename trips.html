@@ -7,7 +7,7 @@
 
     <title>Our Trips</title>
 
-    <link rel="stylesheet" href="style.css?v=27">
+    <link rel="stylesheet" href="style.css?v=28">
     <!-- The hero poster is the largest paint on this page, so it wins the
          high-priority slot; the trip card image loads normally. -->
     <link rel="preload" as="image" href="images/trips-poster.jpg" fetchpriority="high">
@@ -50,7 +50,7 @@
 
         <div id="trip-container" class="trip-container" aria-live="polite" aria-busy="true">
             <div class="trip-card trip-initial-card">
-                <img src="images/white_island.jpeg" alt="Red Sea boat trip" class="trip-image" width="290" height="180" fetchpriority="high">
+                <img src="images/white_island.jpeg" alt="Red Sea boat trip" class="trip-image" width="290" height="180" fetchpriority="high" srcset="images/white_island-400.jpeg 400w, images/white_island-800.jpeg 800w, images/white_island.jpeg 980w" sizes="(max-width: 900px) 100vw, 380px">
                 <h2>Red Sea Boat Trips</h2>
                 <a href="trips.html" class="view-btn">Explore Trips</a>
             </div>
@@ -65,7 +65,7 @@
 
 
 
-<script type="module" src="trips.js"></script>
+<script type="module" src="trips.js?v=2"></script>
 
 </body>
 

@@ -2,6 +2,7 @@ import { collection, getDocs }
 from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 import { db } from "./firebase.js";
+import { responsiveAttrs } from "./js/img-srcset.js?v=1";
 
 const tripContainer = document.getElementById("trip-container");
 
@@ -75,7 +76,7 @@ try {
             return `
                 <div class="trip-card">
                     <img src="${tripImage}" alt="${trip.name}" class="trip-image"
-                        loading="lazy" decoding="async"
+                        loading="lazy" decoding="async"${responsiveAttrs(tripImage, "(max-width: 900px) 100vw, 380px")}
                          onerror="this.onerror=null;this.src='white_island.jpeg';">
                     <h2>${trip.name}</h2>
                     <a href="trips-details.html?id=${doc.id}" class="view-btn">

@@ -1,8 +1,9 @@
 import { doc, getDoc, getDocs, addDoc, setDoc, collection, query, where }
     from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 import { onAuthStateChanged }
-    from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 import { db, auth } from "./firebase.js";
+import { responsiveAttrs } from "./js/img-srcset.js?v=1";
 
 const params = new URLSearchParams(window.location.search);
 const tripId = params.get("id");
@@ -178,7 +179,7 @@ if (!tripId) {
                            data-price="${addon.price}"
                            data-type="${addon.type}"
                            id="addon-${index}">
-                    ${addon.image ? `<img src="${addon.image}" alt="${addon.name}" class="addon-image" loading="lazy" decoding="async">` : ""}
+                    ${addon.image ? `<img src="${addon.image}" alt="${addon.name}" class="addon-image" loading="lazy" decoding="async"${responsiveAttrs(addon.image, "64px")}>` : ""}
                     <span class="addon-details">
                         <span class="addon-name">${addon.name}</span>
                         <span class="addon-price">+${addon.price} EGP ${addon.type === "per_person" ? "/ person" : "/ boat"}</span>
@@ -197,7 +198,7 @@ if (!tripId) {
                             return `
                                 <div class="trip-gallery-row ${isEven ? "image-right" : "image-left"}">
                                     <div class="trip-gallery-image-wrap">
-                                        <img src="${src}" alt="${trip.name} gallery photo" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='images/white_island.jpeg';">
+                                        <img src="${src}" alt="${trip.name} gallery photo" loading="lazy" decoding="async"${responsiveAttrs(src, "(max-width: 900px) 100vw, 60vw")} onerror="this.onerror=null;this.src='images/white_island.jpeg';">
                                     </div>
                                                     <div class="trip-gallery-content">
                                     ${item.caption ? `<p>${item.caption}</p>` : ""}
@@ -216,13 +217,13 @@ if (!tripId) {
                 // until the user actually switches to that slide. Only the
                 // first one is worth loading eagerly.
                 const slidesHTML = normalizedImages.map((img, i) => `
-                    <img src="${img}" alt="${opt.boatName}" class="boat-slide ${i === 0 ? "active" : ""}" data-boatopt="${index}" data-slide="${i}" ${i === 0 ? "" : 'loading="lazy" '}decoding="async" onerror="this.onerror=null;this.src='images/white_island.jpeg';">
+                    <img src="${img}" alt="${opt.boatName}" class="boat-slide ${i === 0 ? "active" : ""}" data-boatopt="${index}" data-slide="${i}" ${i === 0 ? "" : 'loading="lazy" '}decoding="async"${responsiveAttrs(img, "(max-width: 520px) 230px, 600px")} onerror="this.onerror=null;this.src='images/white_island.jpeg';">
                 `).join("");
                 const thumbnailsHTML = normalizedImages.length > 1 ? `
                     <div class="boat-thumbnails">
                         ${normalizedImages.map((img, i) => `
                             <button type="button" class="boat-thumbnail ${i === 0 ? "active" : ""}" data-boatopt="${index}" data-slide="${i}" aria-label="View image ${i + 1} of ${opt.boatName}">
-                                <img src="${img}" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='images/white_island.jpeg';">
+                                <img src="${img}" alt="" loading="lazy" decoding="async"${responsiveAttrs(img, "64px")} onerror="this.onerror=null;this.src='images/white_island.jpeg';">
                             </button>
                         `).join("")}
                     </div>
@@ -233,8 +234,8 @@ if (!tripId) {
                         <div class="boat-option-image">
                             ${slidesHTML}
                             ${normalizedImages.length > 1 ? `
-                                <button type="button" class="boat-slide-nav boat-slide-prev" data-boatopt="${index}">‹</button>
-                                <button type="button" class="boat-slide-nav boat-slide-next" data-boatopt="${index}">›</button>
+                                <button type="button" class="boat-slide-nav boat-slide-prev" data-boatopt="${index}">â€¹</button>
+                                <button type="button" class="boat-slide-nav boat-slide-next" data-boatopt="${index}">â€º</button>
                             ` : ""}
                         </div>
                         ${thumbnailsHTML}
@@ -260,11 +261,11 @@ if (!tripId) {
                         <div class="boat-options-section">
                             <h3 class="choose-boat-title">CHOOSE YOUR BOAT</h3>
                             <div class="boat-carousel">
-                                <button type="button" class="boat-carousel-nav boat-carousel-prev" aria-label="Previous boat">‹</button>
+                                <button type="button" class="boat-carousel-nav boat-carousel-prev" aria-label="Previous boat">â€¹</button>
                                 <div class="boat-options-grid">
                                     ${boatCardsHTML}
                                 </div>
-                                <button type="button" class="boat-carousel-nav boat-carousel-next" aria-label="Next boat">›</button>
+                                <button type="button" class="boat-carousel-nav boat-carousel-next" aria-label="Next boat">â€º</button>
                             </div>
                         </div>
                     ` : `<p class="no-slots">No boats available for this trip yet. Please contact us.</p>`}
@@ -415,9 +416,9 @@ if (!tripId) {
                         <h4>Choose Trip Date</h4>
                         ${dateOnlyBooking ? `<p class="calendar-note">Choose a date and we will confirm the trip time with you.</p>` : ""}
                         <div class="calendar-month-header">
-                            <button type="button" id="previous-month" class="calendar-month-button" aria-label="Previous month">‹</button>
+                            <button type="button" id="previous-month" class="calendar-month-button" aria-label="Previous month">â€¹</button>
                             <strong id="calendar-month-label"></strong>
-                            <button type="button" id="next-month" class="calendar-month-button" aria-label="Next month">›</button>
+                            <button type="button" id="next-month" class="calendar-month-button" aria-label="Next month">â€º</button>
                         </div>
                         <div class="calendar-weekdays" aria-hidden="true">
                             <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
