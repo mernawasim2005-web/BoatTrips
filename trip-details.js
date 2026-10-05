@@ -178,7 +178,7 @@ if (!tripId) {
                            data-price="${addon.price}"
                            data-type="${addon.type}"
                            id="addon-${index}">
-                    ${addon.image ? `<img src="${addon.image}" alt="${addon.name}" class="addon-image">` : ""}
+                    ${addon.image ? `<img src="${addon.image}" alt="${addon.name}" class="addon-image" loading="lazy" decoding="async">` : ""}
                     <span class="addon-details">
                         <span class="addon-name">${addon.name}</span>
                         <span class="addon-price">+${addon.price} EGP ${addon.type === "per_person" ? "/ person" : "/ boat"}</span>
@@ -197,7 +197,7 @@ if (!tripId) {
                             return `
                                 <div class="trip-gallery-row ${isEven ? "image-right" : "image-left"}">
                                     <div class="trip-gallery-image-wrap">
-                                        <img src="${src}" alt="${trip.name} gallery photo" onerror="this.onerror=null;this.src='images/white_island.jpeg';">
+                                        <img src="${src}" alt="${trip.name} gallery photo" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='images/white_island.jpeg';">
                                     </div>
                                                     <div class="trip-gallery-content">
                                     ${item.caption ? `<p>${item.caption}</p>` : ""}
@@ -212,14 +212,17 @@ if (!tripId) {
                         // Build boat selection cards
             const boatCardsHTML = boatOptions.map((opt, index) => {
                 const normalizedImages = normalizeBoatImageList(opt);
+                // Inactive slides are display:none, so the browser defers them
+                // until the user actually switches to that slide. Only the
+                // first one is worth loading eagerly.
                 const slidesHTML = normalizedImages.map((img, i) => `
-                    <img src="${img}" alt="${opt.boatName}" class="boat-slide ${i === 0 ? "active" : ""}" data-boatopt="${index}" data-slide="${i}" onerror="this.onerror=null;this.src='images/white_island.jpeg';">
+                    <img src="${img}" alt="${opt.boatName}" class="boat-slide ${i === 0 ? "active" : ""}" data-boatopt="${index}" data-slide="${i}" ${i === 0 ? "" : 'loading="lazy" '}decoding="async" onerror="this.onerror=null;this.src='images/white_island.jpeg';">
                 `).join("");
                 const thumbnailsHTML = normalizedImages.length > 1 ? `
                     <div class="boat-thumbnails">
                         ${normalizedImages.map((img, i) => `
                             <button type="button" class="boat-thumbnail ${i === 0 ? "active" : ""}" data-boatopt="${index}" data-slide="${i}" aria-label="View image ${i + 1} of ${opt.boatName}">
-                                <img src="${img}" alt="" onerror="this.onerror=null;this.src='images/white_island.jpeg';">
+                                <img src="${img}" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='images/white_island.jpeg';">
                             </button>
                         `).join("")}
                     </div>

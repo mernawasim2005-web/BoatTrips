@@ -1990,7 +1990,7 @@ background-color: rgb(1, 35, 63);
     padding: 13px 20px;
     font-size: 15px;
     cursor: pointer;
-    transition: 0.2s;
+    transition: background-color 0.2s ease, color 0.2s ease;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -3866,7 +3866,7 @@ body.trip-page .activity-section h2 {
     border: 5px solid transparent;
     box-shadow: 0 3px 12px rgba(0,0,0,0.1);
     text-align: center;
-    transition: 0.2s;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .boat-option-card:hover {

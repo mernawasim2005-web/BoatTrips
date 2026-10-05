@@ -7,15 +7,18 @@
 
     <title>Our Trips</title>
 
-    <link rel="stylesheet" href="style.css?v=26">
-    <link rel="preload" as="image" href="images/white_island.jpeg" fetchpriority="high">
+    <link rel="stylesheet" href="style.css?v=27">
+    <!-- The hero poster is the largest paint on this page, so it wins the
+         high-priority slot; the trip card image loads normally. -->
+    <link rel="preload" as="image" href="images/trips-poster.jpg" fetchpriority="high">
+    <link rel="preload" as="image" href="images/white_island.jpeg">
 </head>
 
 <body>
 
     <nav>
 
-        <div class="logo"><img src="AQUAVIDA_WORD.png" alt="AQUAVIDA" class="logo-word"></div>
+        <div class="logo"><img src="AQUAVIDA_WORD.png?v=2" alt="AQUAVIDA" class="logo-word" width="500" height="87" decoding="async"></div>
 
         <div class="nav-links">
             <a href="index.html">Home</a>
@@ -30,7 +33,7 @@
 
     <section class="trips">
 
-    <video class="trips-video" autoplay muted loop playsinline preload="metadata" poster="images/hero2.jpeg">
+    <video class="trips-video" autoplay muted loop playsinline preload="none" poster="images/trips-poster.jpg" aria-hidden="true" tabindex="-1">
         <source data-src="trips-waves-video.mp4" type="video/mp4" media="(min-width: 768px)">
     </video>
 
@@ -56,7 +59,7 @@
 
 </section>
 
-<script src="js/defer-media.js" defer></script>
+<script src="js/defer-media.js?v=2" defer></script>
 
 
 

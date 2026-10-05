@@ -2457,7 +2457,7 @@ async function loadBoatsList() {
                 : (boat.image ? [boat.image] : []);
 
             const thumbnailsHTML = images.map((img) => `
-                <img src="${img}" alt="${boat.name}" class="admin-boat-thumb">
+                <img src="${img}" alt="${boat.name}" class="admin-boat-thumb" loading="lazy" decoding="async">
             `).join("");
 
             html += `
@@ -2528,7 +2528,7 @@ async function showBoatDetails(boatId) {
         }[boat.status] || boat.status || "Not set";
         const galleryHTML = images.length ? images.map((image, index) => `
             <button type="button" class="boat-detail-photo-button" data-src="${image}" data-alt="${boat.name} photo ${index + 1}">
-                <img src="${image}" alt="${boat.name} photo ${index + 1}" class="boat-detail-photo">
+                <img src="${image}" alt="${boat.name} photo ${index + 1}" class="boat-detail-photo" loading="lazy" decoding="async">
             </button>
         `).join("") : "<p>No photos have been added to this boat.</p>";
         const demandHTML = tripDemand.length ? tripDemand.map(([tripName, guests]) => `
