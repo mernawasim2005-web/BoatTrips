@@ -1,0 +1,17 @@
+{
+  "name": "aquavida-boat-trips",
+  "version": "1.0.0",
+  "description": "Professional boat fleet website for AQUAVIDA Boat Trips Egypt",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "boat-fleet",
+    "red-sea",
+    "egypt",
+    "aquavida"
+  ],
+  "author": "AQUAVIDA",
+  "license": "ISC"
+}
