@@ -463,8 +463,8 @@ body.home-page .logo-word {
 
 .trip-card img.trip-image {
     width: 100%;
-    height: clamp(300px, 31vw, 430px);
-    min-height: 300px;
+    height: clamp(240px, 25vw, 360px);
+    min-height: 240px;
     object-fit: cover;
     object-position: center;
     display: block;
@@ -4518,8 +4518,8 @@ body.trip-page .activity-section h2 {
     }
 
     .trip-card img.trip-image {
-        height: 460px;
-        min-height: 460px;
+        height: 320px;
+        min-height: 320px;
         margin-bottom: 10px;
     }
 
