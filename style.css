@@ -409,12 +409,13 @@ body.home-page .logo-word {
 
 .trip-card img.trip-image {
     width: 100%;
-    height: 180px;
+    height: 245px;
     object-fit: cover;
     display: block;
-    border-radius: 10px;
+    border-radius: 12px;
     margin-bottom: 20px;
     background-color: #e4f7ff;
+    box-shadow: 0 10px 20px rgba(1, 35, 63, 0.12);
 }
 
 .trip-card h3 {
@@ -4707,10 +4708,17 @@ body.trip-page .activity-section h2 {
 }
 
 .modern-fleet-card .fleet-image {
-    height: 220px;
+    height: 260px;
     position: relative;
     background-color: #0b253a;
     overflow: hidden;
+}
+
+.modern-fleet-card .fleet-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .fleet-status-badge {
