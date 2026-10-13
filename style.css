@@ -11,6 +11,10 @@ body {
     padding-top: 110px;
 }
 
+body.home-page {
+    padding-top: 0;
+}
+
 img,
 video,
 svg {
