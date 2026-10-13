@@ -4072,8 +4072,9 @@ body.trip-page .activity-section h2 {
 /* Bigger boat cards with slideshow */
 .boat-option-card {
     display: none;
-    width: min(600px, calc(100% - 130px));
-    padding: 16px;
+    width: min(780px, calc(100% - 60px));
+    max-width: 100%;
+    padding: 12px;
 }
 
 .boat-option-card.carousel-active {
@@ -4083,10 +4084,13 @@ body.trip-page .activity-section h2 {
 
 .boat-option-image {
     position: relative;
-    height: 700px;
-    min-height: 700px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    min-height: 420px;
+    max-height: 78vh;
     margin-bottom: 14px;
-    background: #eaf4f7;
+    background: #ffffff;
     border-radius: 12px;
     overflow: hidden;
 }
@@ -4188,7 +4192,8 @@ body.trip-page .activity-section h2 {
 @media (max-width: 520px) {
     .boat-carousel { gap: 8px; }
     .boat-carousel-nav { min-width: 72px; height: 40px; padding: 0 6px; }
-    .boat-option-image { height: 500px; min-height: 500px; }
+    .boat-option-card { width: min(100%, calc(100% - 20px)); padding: 8px; }
+    .boat-option-image { min-height: 320px; max-height: 60vh; aspect-ratio: 4 / 3; }
 }
 
 /* Trip gallery */
