@@ -8,7 +8,7 @@ body {
     font-family: Arial, sans-serif;
     background-color: rgb(213, 237, 246);
     color: rgb(4, 45, 86);
-    padding-top: 110px;
+    padding-top: 0;
 }
 
 body.home-page {
@@ -116,7 +116,7 @@ button:hover,
         align-items: center;
         justify-content: center;
         text-align: center;
-        padding: 120px 20px 38px;
+        padding: 0 20px 38px;
     }
 
     .hero-content,
@@ -523,7 +523,7 @@ body.home-page .logo-word {
 
 .trip-details {
     min-height: 600px;
-    padding: 80px 8%;
+    padding: 0 8% 60px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -675,7 +675,7 @@ body.about-page .feature-card {
 }
 
 body.about-page .about-hero {
-    padding: 170px 8% 20px;
+    padding: 0 8% 20px;
     text-align: center;
 }
 
@@ -1068,7 +1068,7 @@ body.contact-page {
 }
 
 .contact-hero {
-    padding: 165px 8% 34px;
+    padding: 0 8% 34px;
     text-align: center;
 }
 
@@ -3862,7 +3862,7 @@ body.trip-page {
 body.trip-page .trip-details {
     background: transparent;
     min-height: auto;
-    padding: 40px 6% 60px;
+    padding: 0 6% 60px;
     align-items: flex-start;
     justify-content: center;
 }
@@ -4400,7 +4400,7 @@ body.trip-page .activity-section h2 {
     .hero {
         min-height: 620px;
         height: auto;
-        padding: 190px 24px 70px;
+        padding: 0 24px 70px;
         align-items: flex-start;
     }
 
@@ -4451,7 +4451,7 @@ body.trip-page .activity-section h2 {
     }
 
     .contact-hero {
-        padding-top: 140px;
+        padding-top: 0;
     }
 
     .contact-card,
@@ -4460,7 +4460,7 @@ body.trip-page .activity-section h2 {
     }
 
     .about-hero {
-        padding-top: 145px;
+        padding-top: 0;
     }
 
     .about-story,
@@ -4530,7 +4530,7 @@ body.trip-page .activity-section h2 {
 
     .trip-details {
         min-height: 0;
-        padding: 120px 18px 40px;
+        padding: 0 18px 40px;
         display: block;
     }
 
