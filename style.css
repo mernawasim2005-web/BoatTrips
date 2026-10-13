@@ -178,14 +178,14 @@ button:hover,
 
 nav {
     position: sticky;
-    top: 14px;
+    top: 0;
     z-index: 30;
     height: 70px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 7%;
-    margin: 14px 20px 0;
+    margin: 10px 20px 0;
     border-radius: 70px;
 
     background-color: rgba(255, 255, 255, 0.2);
@@ -4339,8 +4339,8 @@ body.trip-page .activity-section h2 {
     }
 
     nav {
-        position: static;
-        top: auto;
+        position: sticky;
+        top: 0;
         left: auto;
         right: auto;
         width: auto;
@@ -4350,7 +4350,7 @@ body.trip-page .activity-section h2 {
         border-radius: 18px;
         flex-wrap: wrap;
         gap: 12px;
-        margin: 16px 16px 0;
+        margin: 8px 16px 0;
     }
 
     .hero-content,
