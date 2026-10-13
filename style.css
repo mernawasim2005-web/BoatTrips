@@ -463,8 +463,8 @@ body.home-page .logo-word {
 
 .trip-card img.trip-image {
     width: 100%;
-    height: 560px;
-    min-height: 560px;
+    height: clamp(300px, 31vw, 430px);
+    min-height: 300px;
     object-fit: cover;
     object-position: center;
     display: block;
