@@ -4083,18 +4083,20 @@ body.trip-page .activity-section h2 {
 
 .boat-option-image {
     position: relative;
-    height: 470px;
+    height: 640px;
+    min-height: 640px;
     margin-bottom: 14px;
     background: #eaf4f7;
-    border-radius: 8px;
+    border-radius: 12px;
+    overflow: hidden;
 }
 
 .boat-option-card .boat-slide {
     display: none;
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    border-radius: 8px;
+    object-fit: cover;
+    border-radius: 12px;
     position: absolute;
     top: 0;
     left: 0;
@@ -4184,7 +4186,7 @@ body.trip-page .activity-section h2 {
 @media (max-width: 520px) {
     .boat-carousel { gap: 8px; }
     .boat-carousel-nav { min-width: 72px; height: 40px; padding: 0 6px; }
-    .boat-option-image { height: 330px; }
+    .boat-option-image { height: 420px; min-height: 420px; }
 }
 
 /* Trip gallery */
@@ -4721,8 +4723,8 @@ body.trip-page .activity-section h2 {
 }
 
 .modern-fleet-card .fleet-image {
-    height: 560px;
-    min-height: 560px;
+    height: 600px;
+    min-height: 600px;
     position: relative;
     background-color: #0b253a;
     overflow: hidden;
