@@ -108,6 +108,53 @@ button:hover,
 
     .hero {
         min-height: 560px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .hero-content,
+    .hero-actions,
+    .contact-form,
+    .contact-card,
+    .about-story,
+    .about-offers,
+    .trip-card,
+    .modern-fleet-card,
+    .boat-option-card,
+    .login-section,
+    .account-section,
+    .contact-section {
+        width: min(100%, 420px);
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-content {
+        max-width: 100%;
+    }
+
+    .hero-actions {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .trip-container,
+    .features-container,
+    .team-container,
+    .fleet-container,
+    .boat-options-grid,
+    .contact-grid,
+    .account-grid,
+    .login-layout {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
         height: auto;
         padding: 120px 20px 38px;
     }
@@ -4311,6 +4358,19 @@ body.trip-page .activity-section h2 {
         flex-wrap: wrap;
         gap: 12px;
         margin: 16px 16px 0;
+    }
+
+    .hero-content,
+    .hero-actions,
+    .trip-card,
+    .modern-fleet-card,
+    .contact-card,
+    .contact-form,
+    .about-story,
+    .about-offers,
+    .boat-option-card {
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .logo {
