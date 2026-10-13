@@ -1,8 +1,28 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const os = require("os");
 
 const PORT = process.env.PORT || 3001;
+
+function getLanUrls() {
+    const localUrls = new Set();
+    const interfaces = os.networkInterfaces();
+
+    for (const entries of Object.values(interfaces)) {
+        for (const entry of entries || []) {
+            if (entry.family === "IPv4" && !entry.internal) {
+                localUrls.add(`http://${entry.address}:${PORT}/`);
+            }
+        }
+    }
+
+    if (localUrls.size === 0) {
+        localUrls.add(`http://localhost:${PORT}/`);
+    }
+
+    return [...localUrls];
+}
 
 const MIME_TYPES = {
     ".html": "text/html; charset=utf-8",
@@ -82,10 +102,15 @@ const server = http.createServer((req, res) => {
     });
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, "0.0.0.0", () => {
+    const lanUrls = getLanUrls();
+
     console.log(`\n========================================================`);
     console.log(`  STANDALONE OUR FLEET WEBSITE RUNNING ON PORT ${PORT}`);
     console.log(`========================================================`);
+    for (const url of lanUrls) {
+        console.log(`  Open on device: ${url}`);
+    }
     console.log(`  Fleet Website (Home): http://localhost:${PORT}/`);
     console.log(`  Our Fleet Direct:     http://localhost:${PORT}/our-fleet`);
     console.log(`  Private Admin Area:   http://localhost:${PORT}/admin`);

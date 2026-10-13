@@ -5,9 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Our Fleet</title>
+    <title>Our Fleet | AQUAVIDA Boat Trips Egypt</title>
+    <meta name="description" content="Discover our luxury boat fleet in the Red Sea, Egypt. View boat photos, passenger capacity, facilities, and book unforgettable trips.">
 
-    <link rel="stylesheet" href="style.css?v=28">
+    <link rel="stylesheet" href="style.css?v=29">
     <link rel="preload" as="image" href="images/boat1.jpeg" fetchpriority="high">
 </head>
 
@@ -15,7 +16,6 @@
 
     <!-- Navigation -->
     <nav>
-
         <div class="logo"><img src="AQUAVIDA_WORD.png?v=2" alt="AQUAVIDA" class="logo-word" width="500" height="87" decoding="async"></div>
 
         <div class="nav-links">
@@ -25,61 +25,63 @@
             <a href="contact.html">Contact</a>
             <a href="fleet.html">Our Fleet</a>
         </div>
-
     </nav>
-
 
     <!-- Fleet Intro -->
     <section class="about-intro fleet-intro">
-        <span class="fleet-eyebrow">Our Boats</span>
+        <span class="fleet-eyebrow">Red Sea Marine Experience</span>
 
-        <h1>Our Fleet</h1>
+        <h1>Our Boat Fleet</h1>
 
         <p>
-            Take a look at the boats that will take you on your next Red Sea adventure.
-            Comfortable, safe, and ready for fun.
+            Explore our professionally maintained fleet of boats ready for private charters, island trips, snorkeling, and sunset cruises in Hurghada and the Red Sea.
         </p>
     </section>
 
-
-    <!-- Boats -->
+    <!-- Boats Showcase -->
     <section class="fleet-section">
 
-        <h2 class="fleet-section-title">Choose your boat</h2>
-
-        <p class="fleet-section-subtitle">
-            Every boat is crewed, maintained and ready for the water.
-        </p>
+        <div class="fleet-section-header">
+            <h2 class="fleet-section-title">Choose Your Boat</h2>
+            <p class="fleet-section-subtitle">
+                Every vessel is fully licensed, inspected, crewed, and equipped for maximum comfort and safety.
+            </p>
+        </div>
 
         <div id="fleet-container" class="fleet-container" aria-live="polite" aria-busy="true">
-            <div class="fleet-card fleet-initial-card">
-                <div class="fleet-image">
-                    <img src="images/boat1.jpeg" alt="Our fleet" width="250" height="180" fetchpriority="high" srcset="images/boat1-400.jpeg 400w, images/boat1-800.jpeg 800w, images/boat1.jpeg 1158w" sizes="(max-width: 900px) 100vw, 300px">
-                </div>
-                <h3>Our Fleet</h3>
-                <p>Comfortable, safe, and ready for your next adventure.</p>
+            <div class="fleet-loading">
+                <div class="boat-spinner" aria-hidden="true"></div>
+                <p>Loading our fleet...</p>
             </div>
+        </div>
+
+    </section>
+
+    <!-- Charter CTA Strip -->
+    <section class="fleet-charter-cta">
+        <div class="fleet-charter-cta-inner">
+            <div class="cta-text">
+                <h3>Looking for a Custom Private Charter?</h3>
+                <p>We tailor private trips to Orange Bay, Giftun Island, Dolphin Reef, and sunset spots.</p>
+            </div>
+            <a href="https://wa.me/201223595411?text=Hello%20AQUAVIDA,%20I%20would%20like%20to%20inquire%20about%20a%20private%20boat%20charter." target="_blank" rel="noopener" class="book-btn">
+                Contact Technical Support (0122 359 5411)
+            </a>
         </div>
     </section>
 
-
     <!-- Footer -->
     <footer class="site-footer">
-
         <div class="site-footer-inner">
-
             <div>
                 <h3>AQUAVIDA</h3>
-                <p>Boat trips, islands and snorkeling experiences in the Red Sea.</p>
+                <p>Boat trips, islands and snorkeling experiences in the Red Sea, Egypt.</p>
             </div>
 
             <div>
                 <h3>Explore</h3>
                 <div class="site-footer-links">
-                    <a href="trips.html">Our Trips</a>
                     <a href="fleet.html">Our Fleet</a>
-                    <a href="about.html">About Us</a>
-                    <a href="account.html">My Account</a>
                 </div>
             </div>
 
@@ -87,18 +89,22 @@
                 <h3>Contact</h3>
                 <div class="site-footer-links">
                     <a href="https://wa.me/201223595411" target="_blank" rel="noopener">Technical support: 0122 359 5411</a>
+                    <a class="social-link instagram-link" href="https://www.instagram.com/aquavidatrips?stkn=MWlzcmt1ZHp2eDZnYw==" target="_blank" rel="noopener">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4.2"></circle><circle cx="17.5" cy="6.5" r="1.1"></circle></svg>
+                        Instagram
+                    </a>
+                    <a class="social-link facebook-link" href="https://l.instagram.com/?u=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1DG6cj3Z51%2F&e=AUBHdO4fmlGsjf_ilcIhK8c5Hnd0BTje4vPBmxS_FyNb6hxXY-cB1cNVi9_EomIxJ69ux_zqyEdSyvEvH0j7bRpYleubzY9kWiQ_w6sNu4BU6WTutUJLdzE-SZ1cXDJ7gi-M-Ef0VspRYIr9qGoO3A" target="_blank" rel="noopener">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3h-3.1V7.6c0-.9.3-1.6 1.7-1.6H17V3.1c-.3 0-1.3-.1-2.4-.1-2.4 0-4.1 1.5-4.1 4.3V11H8v3h2.5v8h3z"></path></svg>
+                        Facebook
+                    </a>
                 </div>
             </div>
-
         </div>
 
         <p class="site-footer-bottom">&copy; AQUAVIDA. All rights reserved.</p>
-
     </footer>
 
-    <script type="module" src="fleet.js?v=17"></script>
-
-
+    <script type="module" src="fleet.js?v=29"></script>
 
 </body>
 

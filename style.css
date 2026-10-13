@@ -893,6 +893,43 @@ body.home-page .feature-card {
     color: #f5d497;
 }
 
+.social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(245, 212, 151, 0.32);
+    background: rgba(255, 255, 255, 0.06);
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.social-link:hover {
+    transform: translateY(-1px);
+    border-color: rgba(245, 212, 151, 0.6);
+    background: rgba(245, 212, 151, 0.08);
+}
+
+.social-link svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    flex-shrink: 0;
+}
+
+.social-link.instagram-link {
+    color: #f7d7a8;
+}
+
+.social-link.facebook-link {
+    color: #b9d7ff;
+}
+
+.social-link.website-link {
+    color: #f5d497;
+}
+
 .site-footer-bottom {
     max-width: 1200px;
     margin: 30px auto 0;
@@ -1891,9 +1928,20 @@ background-color: rgb(1, 35, 63);
     background-color: #d9534f;
     color: white;
     border: none;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    border-radius: 6px;
+    min-width: 68px;
+    min-height: 30px;
+    padding: 0 8px;
+    cursor: pointer;
+}
+
+.remove-addon-btn,
+.remove-boatoption-btn,
+.remove-gallery-image-btn,
+.remove-boat-image-btn {
+    border-radius: 6px;
+    min-height: 30px;
+    padding: 0 8px;
     cursor: pointer;
 }
 
@@ -2942,13 +2990,15 @@ background-color: rgb(1, 35, 63);
 }
 
 .calendar-month-button {
-    width: 34px;
+    min-width: 58px;
     height: 34px;
     border: 1px solid #b9dce7;
     border-radius: 7px;
     background: white;
     color: #087ea4;
-    font-size: 24px;
+    padding: 0 8px;
+    font-size: 12px;
+    font-weight: 700;
     line-height: 1;
     cursor: pointer;
 }
@@ -3139,13 +3189,15 @@ background-color: rgb(1, 35, 63);
 }
 
 .admin-calendar-month-controls button {
-    width: 34px;
+    min-width: 58px;
     height: 34px;
     border: 1px solid #b9dce7;
     border-radius: 7px;
     background: white;
     color: #087ea4;
-    font-size: 24px;
+    padding: 0 8px;
+    font-size: 12px;
+    font-weight: 700;
     line-height: 1;
     cursor: pointer;
 }
@@ -3461,11 +3513,13 @@ background-color: rgb(1, 35, 63);
     background-color: rgba(0,0,0,0.5);
     color: white;
     border: none;
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
     border-radius: 50%;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 23px;
+    line-height: 1;
     z-index: 2;
 }
 
@@ -3490,7 +3544,7 @@ body.fleet-page {
 }
 
 body.fleet-page .fleet-intro {
-    padding: 90px 8% 30px;
+    padding: 140px 8% 30px;
     text-align: center;
     max-width: 760px;
     margin: 0 auto;
@@ -3604,9 +3658,9 @@ body.fleet-page .fleet-image {
 
 body.fleet-page .fleet-nav {
     background-color: rgba(1, 35, 63, 0.55);
-    width: 34px;
-    height: 34px;
-    font-size: 16px;
+    width: 40px;
+    height: 40px;
+    font-size: 23px;
 }
 
 body.fleet-page .fleet-prev {
@@ -3986,10 +4040,13 @@ body.trip-page .activity-section h2 {
     background-color: rgba(0,0,0,0.5);
     color: white;
     border: none;
-    width: 26px;
-    height: 26px;
+    width: 38px;
+    height: 38px;
+    padding: 0;
     border-radius: 50%;
     cursor: pointer;
+    font-size: 22px;
+    line-height: 1;
     z-index: 2;
 }
 
@@ -4029,14 +4086,16 @@ body.trip-page .activity-section h2 {
 }
 
 .boat-carousel-nav {
-    flex: 0 0 44px;
-    width: 44px;
+    flex: 0 0 auto;
+    min-width: 78px;
     height: 44px;
     border: 0;
-    border-radius: 50%;
+    border-radius: 7px;
+    padding: 0 10px;
     background: #087ea4;
     color: white;
-    font-size: 30px;
+    font-size: 12px;
+    font-weight: 700;
     line-height: 1;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
@@ -4053,7 +4112,7 @@ body.trip-page .activity-section h2 {
 
 @media (max-width: 520px) {
     .boat-carousel { gap: 8px; }
-    .boat-carousel-nav { flex-basis: 44px; width: 44px; height: 44px; }
+    .boat-carousel-nav { min-width: 72px; height: 40px; padding: 0 6px; }
     .boat-option-image { height: 330px; }
 }
 
@@ -4560,3 +4619,843 @@ body.trip-page .activity-section h2 {
 
 
 
+
+
+/* ==========================================================
+   ENHANCED FLEET & BOAT DETAIL STYLES (AQUAVIDA RED SEA)
+   ========================================================== */
+
+/* Modern Fleet Cards */
+.modern-fleet-card {
+    width: 340px;
+    background: #ffffff;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(1, 35, 63, 0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border-top: 4px solid #087ea4;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.modern-fleet-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 36px rgba(1, 35, 63, 0.14);
+}
+
+.modern-fleet-card .fleet-image {
+    height: 220px;
+    position: relative;
+    background-color: #0b253a;
+    overflow: hidden;
+}
+
+.fleet-status-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(1, 35, 63, 0.75);
+    backdrop-filter: blur(4px);
+    color: #4ade80;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 999px;
+    z-index: 2;
+    border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.fleet-slide-indicator {
+    position: absolute;
+    bottom: 10px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.65);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    z-index: 2;
+}
+
+.fleet-card-body {
+    padding: 22px 20px 24px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.fleet-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.fleet-card-title {
+    font-size: 22px;
+    color: rgb(1, 35, 63);
+    margin: 0;
+    font-weight: 700;
+}
+
+.fleet-capacity-pill {
+    background: #e0f2fe;
+    color: #0369a1;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.fleet-card-desc {
+    color: #556976;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 14px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.modern-fleet-card .fleet-specs {
+    margin: 0 0 14px;
+    padding: 0;
+}
+
+.fleet-card-facilities-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+.fleet-card-facilities-preview span {
+    background: #f1f5f9;
+    color: #334155;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 9px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+}
+
+.fleet-card-actions {
+    margin-top: auto;
+}
+
+.fleet-view-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 12px 18px;
+    border-radius: 10px;
+    background: #087ea4;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.fleet-view-btn:hover {
+    background: #056382;
+    transform: translateY(-2px);
+}
+
+.fleet-charter-cta {
+    background: linear-gradient(135deg, rgb(1, 35, 63) 0%, rgb(8, 126, 164) 100%);
+    color: #ffffff;
+    padding: 50px 8%;
+    margin-top: 30px;
+}
+
+.fleet-charter-cta-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.fleet-charter-cta h3 {
+    font-size: 26px;
+    margin: 0 0 8px;
+    color: #ffffff;
+}
+
+.fleet-charter-cta p {
+    font-size: 16px;
+    color: #dbeafe;
+    margin: 0;
+}
+
+.fleet-charter-cta .book-btn {
+    background: #f59e0b;
+    color: #1e293b;
+    font-weight: 700;
+    padding: 14px 28px;
+    text-decoration: none;
+    white-space: nowrap;
+    border-radius: 10px;
+    transition: background 0.2s ease;
+}
+
+.fleet-charter-cta .book-btn:hover {
+    background: #d97706;
+}
+
+/* ==========================================================
+   INDIVIDUAL BOAT DETAILS PAGE
+   ========================================================== */
+body.boat-detail-page {
+    background-color: #f7f9fa;
+    color: rgb(1, 35, 63);
+    min-height: 100vh;
+}
+
+.boat-detail-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 140px 24px 80px;
+}
+
+.boat-detail-loading,
+.boat-detail-error {
+    text-align: center;
+    padding: 80px 20px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    max-width: 600px;
+    margin: 60px auto;
+}
+
+.boat-error-icon {
+    font-size: 60px;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.boat-spinner {
+    width: 44px;
+    height: 44px;
+    border: 4px solid #e2e8f0;
+    border-top-color: #087ea4;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    animation: boatSpin 0.9s linear infinite;
+}
+
+@keyframes boatSpin {
+    to { transform: rotate(360deg); }
+}
+
+/* Breadcrumbs */
+.boat-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 28px;
+}
+
+.boat-breadcrumb a {
+    color: #087ea4;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.boat-breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb-separator {
+    color: #cbd5e1;
+}
+
+.breadcrumb-current {
+    color: rgb(1, 35, 63);
+    font-weight: 600;
+}
+
+/* Hero Grid: Gallery & Summary */
+.boat-hero-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 36px;
+    align-items: start;
+    margin-bottom: 50px;
+}
+
+.boat-gallery-block {
+    background: #ffffff;
+    padding: 14px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.boat-main-image-wrap {
+    position: relative;
+    height: 440px;
+    border-radius: 14px;
+    overflow: hidden;
+    background-color: #0b253a;
+}
+
+.boat-main-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.25s ease;
+}
+
+.boat-status-tag {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    backdrop-filter: blur(6px);
+    z-index: 2;
+}
+
+.badge-active {
+    background: rgba(1, 35, 63, 0.85);
+    color: #4ade80;
+    border: 1px solid rgba(74, 222, 128, 0.4);
+}
+
+.badge-maintenance {
+    background: rgba(1, 35, 63, 0.85);
+    color: #facc15;
+    border: 1px solid rgba(250, 204, 21, 0.4);
+}
+
+.badge-inactive {
+    background: rgba(1, 35, 63, 0.85);
+    color: #f87171;
+    border: 1px solid rgba(248, 113, 113, 0.4);
+}
+
+.gallery-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(1, 35, 63, 0.65);
+    color: #ffffff;
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+    z-index: 3;
+}
+
+.gallery-nav-btn:hover {
+    background: rgba(8, 126, 164, 0.95);
+}
+
+.gallery-nav-btn.prev { left: 14px; }
+.gallery-nav-btn.next { right: 14px; }
+
+.boat-thumbs-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.boat-thumb-item {
+    width: 80px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    padding: 0;
+    cursor: pointer;
+    background: #e2e8f0;
+    flex-shrink: 0;
+    transition: border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.boat-thumb-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.boat-thumb-item.active {
+    border-color: #087ea4;
+    box-shadow: 0 0 0 2px rgba(8, 126, 164, 0.3);
+}
+
+/* Boat Summary Card Right */
+.boat-summary-card {
+    background: #ffffff;
+    padding: 36px 32px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    border-top: 4px solid #087ea4;
+}
+
+.boat-summary-eyebrow {
+    display: inline-block;
+    color: #087ea4;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.boat-title {
+    font-size: 34px;
+    color: rgb(1, 35, 63);
+    margin: 0 0 14px;
+    line-height: 1.2;
+}
+
+.boat-badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.boat-pill-badge {
+    background: #f1f5f9;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid #e2e8f0;
+}
+
+.boat-pill-badge.capacity-pill {
+    background: #e0f2fe;
+    color: #0284c7;
+    border-color: #bae6fd;
+    font-weight: 700;
+}
+
+.boat-short-desc {
+    color: #475569;
+    font-size: 16px;
+    line-height: 1.7;
+    margin: 0 0 26px;
+}
+
+.boat-highlights-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 28px;
+    border: 1px solid #edf2f7;
+}
+
+.highlight-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.highlight-label {
+    font-size: 12px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.highlight-val {
+    font-size: 15px;
+    font-weight: 700;
+    color: rgb(1, 35, 63);
+}
+
+.boat-action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.boat-inquire-btn {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 16px 24px;
+    border-radius: 12px;
+    background: #25d366;
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3);
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.boat-inquire-btn:hover {
+    background: #1eb956;
+    transform: translateY(-2px);
+}
+
+.boat-view-trips-btn {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 14px 20px;
+    border-radius: 12px;
+    background: #f1f5f9;
+    color: #087ea4;
+    border: 1px solid #cbd5e1;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.boat-view-trips-btn:hover {
+    background: #e2e8f0;
+    color: #056382;
+}
+
+/* Section Headers */
+.section-header-compact {
+    margin-bottom: 28px;
+    text-align: left;
+}
+
+.section-header-compact h2 {
+    font-size: 28px;
+    color: rgb(1, 35, 63);
+    margin: 0 0 6px;
+}
+
+.section-header-compact p {
+    color: #64748b;
+    font-size: 15px;
+    margin: 0;
+}
+
+/* Specifications Cards */
+.boat-specs-section {
+    margin-bottom: 50px;
+}
+
+.boat-spec-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 18px;
+}
+
+.spec-card {
+    background: #ffffff;
+    padding: 22px 20px;
+    border-radius: 14px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid #f1f5f9;
+    transition: transform 0.2s ease;
+}
+
+.spec-card:hover {
+    transform: translateY(-3px);
+}
+
+.spec-icon {
+    font-size: 28px;
+    width: 50px;
+    height: 50px;
+    background: #e0f2fe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+.spec-text h3 {
+    font-size: 12px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 4px;
+}
+
+.spec-text p {
+    font-size: 15px;
+    font-weight: 700;
+    color: rgb(1, 35, 63);
+    margin: 0;
+}
+
+/* Facilities Grid */
+.boat-facilities-section {
+    margin-bottom: 50px;
+}
+
+.facilities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.facility-card {
+    background: #ffffff;
+    padding: 22px;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    border-left: 4px solid #087ea4;
+    transition: transform 0.2s ease;
+}
+
+.facility-card:hover {
+    transform: translateY(-2px);
+}
+
+.facility-icon {
+    font-size: 26px;
+    line-height: 1;
+}
+
+.facility-info h3 {
+    font-size: 16px;
+    color: rgb(1, 35, 63);
+    margin: 0 0 4px;
+    font-weight: 700;
+}
+
+.facility-info p {
+    color: #64748b;
+    font-size: 13px;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Experience Card */
+.boat-experience-section {
+    margin-bottom: 50px;
+}
+
+.experience-card {
+    background: #ffffff;
+    padding: 36px 32px;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    border-left: 6px solid #f59e0b;
+}
+
+.experience-card h2 {
+    font-size: 24px;
+    color: rgb(1, 35, 63);
+    margin: 0 0 14px;
+}
+
+.experience-card p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #475569;
+    margin: 0 0 20px;
+}
+
+.experience-points {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+}
+
+.experience-points li {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+/* Associated Trips */
+.boat-trips-section {
+    margin-bottom: 50px;
+}
+
+.associated-trips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.associated-trip-card {
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease;
+}
+
+.associated-trip-card:hover {
+    transform: translateY(-4px);
+}
+
+.associated-trip-image-wrap {
+    height: 180px;
+    overflow: hidden;
+    background: #0b253a;
+}
+
+.associated-trip-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.associated-trip-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.associated-trip-body h3 {
+    font-size: 19px;
+    color: rgb(1, 35, 63);
+    margin: 0 0 8px;
+}
+
+.associated-trip-desc {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0 0 18px;
+    flex-grow: 1;
+}
+
+.trip-link-btn {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 10px 16px;
+    border-radius: 8px;
+}
+
+.no-trips-box {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.no-trips-box p {
+    font-size: 16px;
+    color: #64748b;
+    margin-bottom: 20px;
+}
+
+/* Charter Banner */
+.boat-charter-banner {
+    background: linear-gradient(135deg, rgb(1, 35, 63) 0%, rgb(8, 126, 164) 100%);
+    border-radius: 20px;
+    padding: 48px 32px;
+    color: #ffffff;
+    text-align: center;
+    box-shadow: 0 12px 36px rgba(1, 35, 63, 0.2);
+}
+
+.boat-charter-banner h2 {
+    font-size: 28px;
+    margin: 0 0 10px;
+    color: #ffffff;
+}
+
+.boat-charter-banner p {
+    font-size: 16px;
+    color: #e0f2fe;
+    max-width: 650px;
+    margin: 0 auto 24px;
+    line-height: 1.6;
+}
+
+.banner-btn {
+    display: inline-block;
+    background: #25d366;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 14px 30px;
+    border-radius: 10px;
+    text-decoration: none;
+    box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.banner-btn:hover {
+    background: #1eb956;
+    transform: translateY(-2px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .boat-hero-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .boat-main-image-wrap {
+        height: 320px;
+    }
+
+    .boat-summary-card {
+        padding: 24px 20px;
+    }
+
+    .boat-title {
+        font-size: 26px;
+    }
+
+    .fleet-charter-cta-inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    body.fleet-page .fleet-intro {
+        padding: 150px 6% 30px;
+    }
+
+    .boat-detail-wrapper {
+        padding: 150px 18px 60px;
+    }
+}

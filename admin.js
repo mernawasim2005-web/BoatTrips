@@ -35,20 +35,20 @@ let adminCalendarBoatId = "";
 let adminCalendarBookings = [];
 let adminCalendarSlots = [];
 
-const defaultOperatorDetails = `ðŸ›Ÿ August list ðŸ›Ÿ
-â–ªï¸ Island+diving
+const defaultOperatorDetails = `August list
+- Island + diving
 1300 l.e
-â–ªï¸ 2in1 Hula orange 1400 l.e
-â–ªï¸ 3in1 Hula orange diving 1700 l.e
-â–ªï¸ Magawesh island 950 l.e
-â–ªï¸ orange island 1000 l.e
-â–ªï¸ Hula hula island 950 l.e
-â–ªï¸ intro diving 1000 l.e
-â–ªï¸ professional diving 1300 l.e without equipment
-â–ªï¸Equipment 500 l.e
-â–ªï¸ dolphin house 800 l.e
-â–ªï¸ transfer makady sahl hashesh 200 l.e per pax
-â–ªï¸ safaga elgona 300 l.e`;
+- 2in1 Hula orange 1400 l.e
+- 3in1 Hula orange diving 1700 l.e
+- Magawesh island 950 l.e
+- orange island 1000 l.e
+- Hula hula island 950 l.e
+- intro diving 1000 l.e
+- professional diving 1300 l.e without equipment
+- Equipment 500 l.e
+- dolphin house 800 l.e
+- transfer makady sahl hashesh 200 l.e per pax
+- safaga elgona 300 l.e`;
 
 function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>"']/g, (character) => ({
@@ -292,10 +292,10 @@ async function checkScheduleConflicts(excludeTripId = null) {
                 if (a.date !== b.date) continue;
 
                 if (a.boatName && a.boatName !== "Not assigned" && a.boatName === b.boatName) {
-                    conflicts.push(`ðŸ›¥ï¸ Boat "${a.boatName}" is scheduled more than once on ${a.date}`);
+                    conflicts.push(`Boat "${a.boatName}" is scheduled more than once on ${a.date}`);
                 }
                 if (a.captainName && a.captainName !== "Not assigned" && a.captainName === b.captainName) {
-                    conflicts.push(`ðŸ‘¨â€âœˆï¸ Captain "${a.captainName}" is scheduled more than once on ${a.date}`);
+                    conflicts.push(`Captain "${a.captainName}" is scheduled more than once on ${a.date}`);
                 }
             }
         }
@@ -402,9 +402,9 @@ async function renderOverview() {
         const upcoming = await getUpcomingSchedule(5);
         const upcomingHTML = upcoming.length > 0 ? upcoming.map((slot) => `
             <div class="revenue-breakdown-row">
-                <span><strong>${slot.tripName}</strong> â€” ${slot.date}</span>
-                <span>ðŸ›¥ï¸ ${slot.boatName} | ðŸ‘¨â€âœˆï¸ ${slot.captainName}</span>
-                <span>ðŸ‘¥ ${slot.booked}/${slot.capacity} booked</span>
+                <span><strong>${slot.tripName}</strong> - ${slot.date}</span>
+                <span>Boat: ${slot.boatName} | Captain: ${slot.captainName}</span>
+                <span>Guests: ${slot.booked}/${slot.capacity} booked</span>
             </div>
         `).join("") : "<p>No upcoming trips scheduled.</p>";
 
@@ -530,8 +530,8 @@ async function renderOverview() {
             .slice(0, 5);
         document.getElementById("recent-activity-list").innerHTML = recentActivity.length ? recentActivity.map((booking) => `
             <div class="recent-activity-row">
-                <span class="recent-activity-icon ${booking.status}">${booking.status === "confirmed" ? "âœ“" : "â€¢"}</span>
-                <div><strong>${booking.customerName}</strong><small>${booking.status} booking${booking.createdAt ? ` Â· ${booking.createdAt.toLocaleDateString()}` : ""}</small></div>
+                <span class="recent-activity-icon ${booking.status}">${booking.status === "confirmed" ? "Confirmed" : "Pending"}</span>
+                <div><strong>${booking.customerName}</strong><small>${booking.status} booking${booking.createdAt ? ` | ${booking.createdAt.toLocaleDateString()}` : ""}</small></div>
                 <b>${booking.totalPrice.toLocaleString()} EGP</b>
             </div>
         `).join("") : "<p>No booking activity yet.</p>";
@@ -687,9 +687,9 @@ function renderBookingsSection() {
                 </label>
             </div>
             <div class="admin-calendar-month-controls">
-                <button type="button" id="admin-calendar-previous" aria-label="Previous month">â€¹</button>
+                <button type="button" id="admin-calendar-previous" aria-label="Previous month">Prev</button>
                 <strong id="admin-calendar-month-label"></strong>
-                <button type="button" id="admin-calendar-next" aria-label="Next month">â€º</button>
+                <button type="button" id="admin-calendar-next" aria-label="Next month">Next</button>
             </div>
             <div class="admin-calendar-weekdays" aria-hidden="true">
                 <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
@@ -1144,11 +1144,11 @@ async function loadOperatorsList() {
                 on_leave: "On leave",
                 inactive: "Inactive"
             }[getOperatorStatus(operator.status)];
-            const contact = [operator.email, operator.notes].filter(Boolean).map(escapeHtml).join(" â€” ");
+            const contact = [operator.email, operator.notes].filter(Boolean).map(escapeHtml).join(" | ");
             return `
                 <div class="admin-boat-card">
                     <div class="admin-trip-row">
-                        <span><strong>${escapeHtml(operator.name)}</strong> â€” ${statusLabel}${operator.phone ? ` â€” ${escapeHtml(operator.phone)}` : ""}</span>
+                        <span><strong>${escapeHtml(operator.name)}</strong> | ${statusLabel}${operator.phone ? ` | ${escapeHtml(operator.phone)}` : ""}</span>
                         <div>
                             <button class="edit-operator-btn" data-id="${escapeHtml(operator.id)}">Edit</button>
                             <button class="delete-operator-btn" data-id="${escapeHtml(operator.id)}">Delete</button>
@@ -1237,7 +1237,7 @@ function renderOperatorProfileAnalytics(operators) {
         const percent = total ? Math.round(row.count / total * 100) : 0;
         return `
             <div class="status-chart-row">
-                <div class="status-chart-meta"><span>${row.label}</span><strong>${row.count}/${total} Â· ${percent}%</strong></div>
+                <div class="status-chart-meta"><span>${row.label}</span><strong>${row.count}/${total} (${percent}%)</strong></div>
                 <div class="status-chart-track"><span class="status-chart-bar ${row.className}" style="width:${percent}%"></span></div>
             </div>
         `;
@@ -1509,13 +1509,13 @@ async function loadBookingsList() {
                 <span class="status-badge status-${status}">${status}</span>
             </div>
         </div>
-        <p>ðŸ‘¤ ${escapeHtml(booking.customerName || "N/A")}</p>
-        <p>ðŸ›¥ï¸ ${escapeHtml(booking.boatName || "Not assigned")}</p>
-        <p>ðŸ‘¨â€âœˆï¸ ${escapeHtml(booking.captainName || "Not assigned")}</p>
-        <p>ðŸ“… ${escapeHtml(booking.scheduleText || "Not specified")}</p>
-        <p>ðŸ‘¥ ${peopleCount} people</p>
-        ${addons ? `<p>âž• ${addons}</p>` : ""}
-        <p>ðŸ’° Revenue: ${totalPrice.toLocaleString()} EGP</p>
+        <p>Customer: ${escapeHtml(booking.customerName || "N/A")}</p>
+        <p>Boat: ${escapeHtml(booking.boatName || "Not assigned")}</p>
+        <p>Captain: ${escapeHtml(booking.captainName || "Not assigned")}</p>
+        <p>Date: ${escapeHtml(booking.scheduleText || "Not specified")}</p>
+        <p>Guests: ${peopleCount}</p>
+        ${addons ? `<p>Add-ons: ${addons}</p>` : ""}
+        <p>Revenue: ${totalPrice.toLocaleString()} EGP</p>
         <p class="booking-date">Booked on: ${date}</p>
 
         <div class="booking-source-row">
@@ -1879,7 +1879,7 @@ async function showTripDetails(tripId) {
             const width = (booked / maxScheduledGuests) * 100;
             return `
                 <div class="status-chart-row">
-                    <div class="status-chart-meta"><span>${slot.date} Â· ${slot.boatName || "Boat not assigned"}</span><strong>${booked} guests</strong></div>
+                    <div class="status-chart-meta"><span>${slot.date} | ${slot.boatName || "Boat not assigned"}</span><strong>${booked} guests</strong></div>
                     <div class="status-chart-track"><span class="status-chart-bar trip-detail-bar" style="width:${width}%"></span></div>
                 </div>
             `;
@@ -2047,11 +2047,11 @@ function renderScheduleList() {
 
     scheduleList.innerHTML = currentSchedule.map((slot, index) => {
     const booked = scheduleOccupancy[index] || 0;
-    const occupancyText = currentTripCapacity ? ` â€” ðŸ‘¥ ${booked}/${currentTripCapacity} booked` : "";
+    const occupancyText = currentTripCapacity ? ` | Guests: ${booked}/${currentTripCapacity} booked` : "";
     return `
         <div class="schedule-slot">
-            <span>ðŸ“… ${slot.date} â€” ðŸ›¥ï¸ ${slot.boatName || "Not assigned"} â€” ðŸ‘¨â€âœˆï¸ ${slot.captainName || "Not assigned"}${occupancyText}</span>
-            <button type="button" class="remove-slot-btn" data-index="${index}">âœ•</button>
+            <span>Date: ${slot.date} | Boat: ${slot.boatName || "Not assigned"} | Captain: ${slot.captainName || "Not assigned"}${occupancyText}</span>
+            <button type="button" class="remove-slot-btn" data-index="${index}">Remove</button>
         </div>
     `;
 }).join("");
@@ -2106,8 +2106,8 @@ function renderAddonsList() {
 
         addonsList.innerHTML = currentAddons.map((addon, index) => `
         <div class="schedule-slot">
-            <span>âž• ${addon.name} â€” ${addon.price} EGP ${addon.type === "per_person" ? "/ person" : "/ boat"} ${addon.image ? `â€” ðŸ–¼ï¸ ${addon.image}` : ""}</span>
-            <button type="button" class="remove-addon-btn" data-index="${index}">âœ•</button>
+            <span>Add-on: ${addon.name} | ${addon.price} EGP ${addon.type === "per_person" ? "/ person" : "/ boat"} ${addon.image ? `| Image: ${addon.image}` : ""}</span>
+            <button type="button" class="remove-addon-btn" data-index="${index}">Remove</button>
         </div>
     `).join("");
 
@@ -2153,8 +2153,8 @@ function renderBoatOptionsList() {
 
     list.innerHTML = currentBoatOptions.map((opt, index) => `
         <div class="schedule-slot">
-            <span>ðŸ›¥ï¸ ${opt.boatName} â€” ${opt.price} EGP / person â€” ðŸ‘¥ up to ${opt.capacity}</span>
-            <button type="button" class="remove-boatoption-btn" data-index="${index}">âœ•</button>
+            <span>Boat: ${opt.boatName} | ${opt.price} EGP / person | Capacity: ${opt.capacity}</span>
+            <button type="button" class="remove-boatoption-btn" data-index="${index}">Remove</button>
         </div>
     `).join("");
 
@@ -2236,8 +2236,8 @@ function renderTripGalleryList() {
 
     list.innerHTML = currentTripGallery.map((item, index) => `
         <div class="schedule-slot">
-            <span>ðŸ–¼ï¸ ${item.image || "No image"} ${item.caption ? `â€” ${item.caption}` : ""}</span>
-            <button type="button" class="remove-gallery-image-btn" data-index="${index}">âœ•</button>
+            <span>Image: ${item.image || "No image"} ${item.caption ? `| Caption: ${item.caption}` : ""}</span>
+                <button type="button" class="remove-gallery-image-btn" data-index="${index}">Remove</button>
         </div>
     `).join("");
 
@@ -2283,7 +2283,7 @@ function showConflictWarning(conflicts) {
         warningBox.className = "";
     } else {
         warningBox.className = "conflict-warning-box";
-        warningBox.innerHTML = conflicts.map((c) => `<p>âš ï¸ ${c}</p>`).join("");
+        warningBox.innerHTML = conflicts.map((c) => `<p>Warning: ${c}</p>`).join("");
     }
 }
 
@@ -2449,9 +2449,9 @@ async function loadBoatsList() {
         snapshot.forEach((docSnap) => {
             const boat = docSnap.data();
             const statusLabel = {
-                active: "ðŸŸ¢ Active",
-                maintenance: "ðŸŸ¡ Maintenance",
-                out_of_service: "ðŸ”´ Out of Service"
+                active: "Active",
+                maintenance: "Maintenance",
+                out_of_service: "Out of Service"
             }[boat.status] || boat.status;
 
             const images = boat.images && boat.images.length > 0 
@@ -2466,11 +2466,12 @@ async function loadBoatsList() {
                 <div class="admin-boat-card">
                     ${images.length > 0 ? `<div class="admin-boat-thumbs">${thumbnailsHTML}</div>` : ""}
                     <div class="admin-trip-row">
-                        <span><strong>${boat.name}</strong> â€” ${boat.capacity} people â€” ${statusLabel}</span>
+                        <span><strong>${boat.name}</strong> | Capacity: ${boat.capacity} | Status: ${statusLabel}</span>
                         <div>
                             <button class="details-boat-btn" data-id="${docSnap.id}">Details</button>
                             <button class="edit-boat-btn" data-id="${docSnap.id}">Edit</button>
                             <button class="delete-boat-btn" data-id="${docSnap.id}">Delete</button>
+                            <a href="boat-details.html?id=${docSnap.id}" target="_blank" rel="noopener" class="preview-boat-link" style="display:inline-block; padding: 7px 12px; background: #e0f2fe; color: #0284c7; border-radius: 6px; font-size: 13px; font-weight: 600; text-decoration: none; margin-left: 6px;">Public Page ↗</a>
                         </div>
                     </div>
                 </div>
@@ -2628,12 +2629,15 @@ function showBoatForm(boat = null) {
     const formContainer = document.getElementById("boat-form-container");
     currentBoatImages = boat?.images ? [...boat.images] : (boat?.image ? [boat.image] : []);
 
+    const defaultFacilities = "Sun Deck & Loungers, Shaded Lounge, Snorkeling Gear Included, Bluetooth Sound System, Fresh Water Shower, Private Marine Restroom, Professional Captain & Crew, Full Safety & Navigation";
+    const facilitiesStr = Array.isArray(boat?.facilities) ? boat.facilities.join(", ") : (boat?.facilities || defaultFacilities);
+
     formContainer.innerHTML = `
         <form id="boat-form" class="admin-form">
             <h4>Basic Info</h4>
 
-            <label>Boat Name: <input type="text" id="boat-name" value="${boat?.name || ""}" required></label>
-            <label>Capacity: <input type="number" id="boat-capacity" value="${boat?.capacity || ""}" required></label>
+            <label>Boat Name: <input type="text" id="boat-name" value="${escapeHtml(boat?.name || "")}" required></label>
+            <label>Capacity: <input type="number" id="boat-capacity" value="${boat?.capacity ?? ""}" required></label>
             <label>Status:
                 <select id="boat-status">
                     <option value="active" ${boat?.status === "active" ? "selected" : ""}>Active</option>
@@ -2644,32 +2648,61 @@ function showBoatForm(boat = null) {
 
             <h4>Technical Details (owner only)</h4>
 
-            <label>Engine: <input type="text" id="boat-engine" value="${boat?.engine || ""}" placeholder="e.g. Yamaha 250HP"></label>
-            <label>Length: <input type="text" id="boat-length" value="${boat?.length || ""}" placeholder="e.g. 12 meters"></label>
-            <label>Year Built: <input type="text" id="boat-year" value="${boat?.year || ""}" placeholder="e.g. 2021"></label>
-            <label>Maintenance Notes: <textarea id="boat-notes">${boat?.notes || ""}</textarea></label>
+            <label>Engine: <input type="text" id="boat-engine" value="${escapeHtml(boat?.engine || "")}" placeholder="e.g. Twin Yamaha 250HP"></label>
+            <label>Length: <input type="text" id="boat-length" value="${escapeHtml(boat?.length || "")}" placeholder="e.g. 14 meters"></label>
+            <label>Year Built: <input type="text" id="boat-year" value="${escapeHtml(boat?.year || "")}" placeholder="e.g. 2022"></label>
+            <label>Maintenance Notes: <textarea id="boat-notes">${escapeHtml(boat?.notes || "")}</textarea></label>
 
-                                    <h4>Public Info (shown to customers)</h4>
+            <h4>Public Info (shown to customers)</h4>
+
+            <label>Facilities &amp; Amenities (comma-separated):
+                <input type="text" id="boat-facilities" value="${escapeHtml(facilitiesStr)}" placeholder="Sun Deck, Snorkeling Gear, Sound System, Restroom">
+            </label>
 
             <div class="schedule-section">
                 <h4>Photos</h4>
                 <div id="boat-images-list"></div>
 
-                <div class="schedule-add-row">
-                    <input type="text" id="new-boat-image" placeholder="images/boat1.jpg">
-                    <button type="button" id="add-boat-image-btn">+ Add</button>
+                <div class="schedule-add-row" style="margin-top: 10px;">
+                    <input type="text" id="new-boat-image" placeholder="e.g. images/boat1.jpeg or https://...">
+                    <button type="button" id="add-boat-image-btn">+ Add Photo</button>
+                </div>
+
+                <div style="margin-top: 8px; font-size: 13px; color: #555;">
+                    <span>Quick add preset photo:</span>
+                    <button type="button" class="quick-photo-btn" data-src="images/boat1.jpeg" style="margin: 2px 4px; padding: 2px 8px; font-size: 12px; cursor: pointer;">Boat 1</button>
+                    <button type="button" class="quick-photo-btn" data-src="images/boat2_1.jpeg" style="margin: 2px 4px; padding: 2px 8px; font-size: 12px; cursor: pointer;">Boat 2</button>
+                    <button type="button" class="quick-photo-btn" data-src="images/boat3_1.jpeg" style="margin: 2px 4px; padding: 2px 8px; font-size: 12px; cursor: pointer;">Boat 3</button>
+                    <button type="button" class="quick-photo-btn" data-src="images/boat4_1.jpeg" style="margin: 2px 4px; padding: 2px 8px; font-size: 12px; cursor: pointer;">Boat 4</button>
+                    <button type="button" class="quick-photo-btn" data-src="images/talah1.jpeg" style="margin: 2px 4px; padding: 2px 8px; font-size: 12px; cursor: pointer;">Talah</button>
+                    <button type="button" class="quick-photo-btn" data-src="images/alia1.jpeg" style="margin: 2px 4px; padding: 2px 8px; font-size: 12px; cursor: pointer;">Alia</button>
+                    <button type="button" class="quick-photo-btn" data-src="images/prince1_1.jpeg" style="margin: 2px 4px; padding: 2px 8px; font-size: 12px; cursor: pointer;">Prince 1</button>
                 </div>
             </div>
 
-            <label>Short Description: <textarea id="boat-description" placeholder="A comfortable, spacious boat perfect for family trips">${boat?.description || ""}</textarea></label><div>
+            <label>Description: 
+                <textarea id="boat-description" placeholder="A comfortable, spacious vessel perfect for Red Sea island excursions and private snorkeling trips...">${escapeHtml(boat?.description || "")}</textarea>
+            </label>
+
+            <div style="margin-top: 15px; display: flex; gap: 10px;">
                 <button type="submit" class="book-btn">${editingBoatId ? "Update Boat" : "Add Boat"}</button>
                 <button type="button" id="cancel-boat-form-btn">Cancel</button>
             </div>
         </form>
     `;
 
-        renderBoatImagesList();
+    renderBoatImagesList();
     document.getElementById("add-boat-image-btn").addEventListener("click", addBoatImage);
+
+    document.querySelectorAll(".quick-photo-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const src = btn.dataset.src;
+            if (!currentBoatImages.includes(src)) {
+                currentBoatImages.push(src);
+                renderBoatImagesList();
+            }
+        });
+    });
 
     document.getElementById("cancel-boat-form-btn").addEventListener("click", () => {
         formContainer.innerHTML = "";
@@ -2688,9 +2721,10 @@ function renderBoatImagesList() {
     }
 
     list.innerHTML = currentBoatImages.map((imgPath, index) => `
-        <div class="schedule-slot">
-            <span>ðŸ–¼ï¸ ${imgPath}</span>
-            <button type="button" class="remove-boat-image-btn" data-index="${index}">âœ•</button>
+        <div class="schedule-slot" style="display:flex; align-items:center; gap:12px; margin-bottom:8px; padding: 6px 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+            <img src="${imgPath}" alt="preview" style="width:48px; height:36px; object-fit:cover; border-radius:4px; border:1px solid #cbd5e1;" onerror="this.style.display='none';">
+            <span style="flex-grow:1; font-size: 13px; color: #334155; word-break:break-all;">${escapeHtml(imgPath)}</span>
+            <button type="button" class="remove-boat-image-btn" data-index="${index}" style="padding: 4px 8px; font-size: 12px; background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; border-radius: 4px; cursor: pointer;">Remove</button>
         </div>
     `).join("");
 
@@ -2707,7 +2741,7 @@ function addBoatImage() {
     const path = document.getElementById("new-boat-image").value.trim();
 
     if (!path) {
-        alert("Please enter an image path.");
+        alert("Please enter an image path or URL.");
         return;
     }
 
@@ -2740,18 +2774,23 @@ async function editBoat(boatId) {
 async function handleBoatFormSubmit(e) {
     e.preventDefault();
 
-        const boatData = {
-        name: document.getElementById("boat-name").value,
-        capacity: parseInt(document.getElementById("boat-capacity").value),
-        status: document.getElementById("boat-status").value,
-        engine: document.getElementById("boat-engine").value,
-        length: document.getElementById("boat-length").value,
-        year: document.getElementById("boat-year").value,
-        notes: document.getElementById("boat-notes").value,
-        images: currentBoatImages,
-        description: document.getElementById("boat-description").value
-    };
+    const facilitiesInput = document.getElementById("boat-facilities");
+    const facilitiesList = facilitiesInput 
+        ? facilitiesInput.value.split(",").map((s) => s.trim()).filter(Boolean)
+        : [];
 
+    const boatData = {
+        name: document.getElementById("boat-name").value.trim(),
+        capacity: parseInt(document.getElementById("boat-capacity").value, 10) || 0,
+        status: document.getElementById("boat-status").value,
+        engine: document.getElementById("boat-engine").value.trim(),
+        length: document.getElementById("boat-length").value.trim(),
+        year: document.getElementById("boat-year").value.trim(),
+        notes: document.getElementById("boat-notes").value.trim(),
+        images: currentBoatImages,
+        facilities: facilitiesList,
+        description: document.getElementById("boat-description").value.trim()
+    };
 
     try {
         if (editingBoatId) {
@@ -3005,7 +3044,7 @@ async function loadExpensesList() {
 
             html += `
                 <div class="admin-trip-row">
-                    <span><strong>${exp.category}</strong> â€” ${exp.amount.toLocaleString()} EGP ${exp.notes ? `â€” ${exp.notes}` : ""}</span>
+                    <span><strong>${exp.category}</strong> | ${exp.amount.toLocaleString()} EGP ${exp.notes ? `| ${exp.notes}` : ""}</span>
                     <div>
                         <button class="edit-expense-btn" data-id="${exp.id}">Edit</button>
                         <button class="delete-expense-btn" data-id="${exp.id}">Delete</button>
@@ -3073,7 +3112,7 @@ async function loadNetProfit() {
         const netProfit = tripRevenue - tripCost - totalExpenses;
 
         container.innerHTML = `
-            <h4>Net Profit â€” ${selectedMonth}</h4>
+            <h4>Net Profit - ${selectedMonth}</h4>
             <div class="revenue-breakdown-row">
                 <span>Trip Revenue</span>
                 <span>${tripRevenue.toLocaleString()} EGP</span>

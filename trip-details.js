@@ -234,8 +234,8 @@ if (!tripId) {
                         <div class="boat-option-image">
                             ${slidesHTML}
                             ${normalizedImages.length > 1 ? `
-                                <button type="button" class="boat-slide-nav boat-slide-prev" data-boatopt="${index}">â€¹</button>
-                                <button type="button" class="boat-slide-nav boat-slide-next" data-boatopt="${index}">â€º</button>
+                                <button type="button" class="boat-slide-nav boat-slide-prev" data-boatopt="${index}" aria-label="Previous photo">&larr;</button>
+                                <button type="button" class="boat-slide-nav boat-slide-next" data-boatopt="${index}" aria-label="Next photo">&rarr;</button>
                             ` : ""}
                         </div>
                         ${thumbnailsHTML}
@@ -261,11 +261,11 @@ if (!tripId) {
                         <div class="boat-options-section">
                             <h3 class="choose-boat-title">CHOOSE YOUR BOAT</h3>
                             <div class="boat-carousel">
-                                <button type="button" class="boat-carousel-nav boat-carousel-prev" aria-label="Previous boat">â€¹</button>
+                                <button type="button" class="boat-carousel-nav boat-carousel-prev" aria-label="Previous boat">Prev boat</button>
                                 <div class="boat-options-grid">
                                     ${boatCardsHTML}
                                 </div>
-                                <button type="button" class="boat-carousel-nav boat-carousel-next" aria-label="Next boat">â€º</button>
+                                <button type="button" class="boat-carousel-nav boat-carousel-next" aria-label="Next boat">Next boat</button>
                             </div>
                         </div>
                     ` : `<p class="no-slots">No boats available for this trip yet. Please contact us.</p>`}
@@ -416,9 +416,9 @@ if (!tripId) {
                         <h4>Choose Trip Date</h4>
                         ${dateOnlyBooking ? `<p class="calendar-note">Choose a date and we will confirm the trip time with you.</p>` : ""}
                         <div class="calendar-month-header">
-                            <button type="button" id="previous-month" class="calendar-month-button" aria-label="Previous month">â€¹</button>
+                            <button type="button" id="previous-month" class="calendar-month-button" aria-label="Previous month">Prev</button>
                             <strong id="calendar-month-label"></strong>
-                            <button type="button" id="next-month" class="calendar-month-button" aria-label="Next month">â€º</button>
+                            <button type="button" id="next-month" class="calendar-month-button" aria-label="Next month">Next</button>
                         </div>
                         <div class="calendar-weekdays" aria-hidden="true">
                             <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
