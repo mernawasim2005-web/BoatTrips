@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="AQUAVIDA logo">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#0a5d8f"/>
+      <stop offset="100%" stop-color="#032d4d"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#f9e7ae"/>
+      <stop offset="100%" stop-color="#d9b76b"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="58" fill="url(#bg)"/>
+  <path d="M65 163c17-39 41-59 72-59 34 0 61 17 78 50-16 28-41 41-77 41-33 0-58-10-73-32Z" fill="url(#gold)" opacity="0.92"/>
+  <path d="M81 139c15-23 32-34 52-34 20 0 37 10 52 30-12 16-28 23-49 23-22 0-39-7-55-19Z" fill="#f8fbff" opacity="0.94"/>
+  <path d="M115 89c8-18 23-27 39-27 18 0 32 8 42 28-7-2-15-3-24-3-18 0-35 5-57 2Z" fill="url(#gold)" opacity="0.95"/>
+  <circle cx="192" cy="85" r="8" fill="#fff" opacity="0.7"/>
+</svg>
