@@ -177,15 +177,17 @@ button:hover,
 /* Navigation */
 
 nav {
-    position: sticky;
-    top: 0;
+    position: fixed;
+    top: 12px;
+    left: 20px;
+    right: 20px;
     z-index: 30;
     height: 70px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 7%;
-    margin: 10px 20px 0;
+    margin: 0;
     border-radius: 70px;
 
     background-color: rgba(255, 255, 255, 0.2);
@@ -255,8 +257,7 @@ body.home-page .logo-word {
     height: 600px;
     display: flex;
     align-items: center;
-    padding-left: 8%;
-    padding-right: 8%;
+    padding: 90px 8% 0;
     position: relative;
     overflow: hidden;
     margin-top: 0;
@@ -4339,10 +4340,10 @@ body.trip-page .activity-section h2 {
     }
 
     nav {
-        position: sticky;
-        top: 0;
-        left: auto;
-        right: auto;
+        position: fixed;
+        top: 8px;
+        left: 16px;
+        right: 16px;
         width: auto;
         height: auto;
         min-height: 58px;
@@ -4350,7 +4351,7 @@ body.trip-page .activity-section h2 {
         border-radius: 18px;
         flex-wrap: wrap;
         gap: 12px;
-        margin: 8px 16px 0;
+        margin: 0;
     }
 
     .hero-content,
@@ -4398,7 +4399,7 @@ body.trip-page .activity-section h2 {
     .hero {
         min-height: 620px;
         height: auto;
-        padding: 0 24px 70px;
+        padding: 90px 24px 70px;
         align-items: flex-start;
     }
 
