@@ -4356,7 +4356,7 @@ body.trip-page .activity-section h2 {
 
     .contact-hero,
     body.about-page .about-hero {
-        padding-top: 150px;
+        padding-top: 190px;
     }
 
     .hero-content,
@@ -4404,7 +4404,7 @@ body.trip-page .activity-section h2 {
     .hero {
         min-height: 620px;
         height: auto;
-        padding: 70px 24px 70px;
+        padding: 190px 24px 70px;
         align-items: flex-start;
     }
 
