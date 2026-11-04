@@ -4354,6 +4354,11 @@ body.trip-page .activity-section h2 {
         margin: 0;
     }
 
+    .contact-hero,
+    body.about-page .about-hero {
+        padding-top: 150px;
+    }
+
     .hero-content,
     .hero-actions,
     .trip-card,
