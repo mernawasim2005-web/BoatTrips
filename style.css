@@ -674,7 +674,7 @@ body.about-page .feature-card {
 }
 
 body.about-page .about-hero {
-    padding: 0 8% 20px;
+    padding: 110px 8% 20px;
     text-align: center;
 }
 
@@ -1067,7 +1067,7 @@ body.contact-page {
 }
 
 .contact-hero {
-    padding: 0 8% 34px;
+    padding: 110px 8% 34px;
     text-align: center;
 }
 
@@ -4449,17 +4449,9 @@ body.trip-page .activity-section h2 {
         padding-right: 18px;
     }
 
-    .contact-hero {
-        padding-top: 0;
-    }
-
     .contact-card,
     .contact-form {
         padding: 22px 18px;
-    }
-
-    .about-hero {
-        padding-top: 0;
     }
 
     .about-story,
